@@ -1,0 +1,123 @@
+/**
+ * \file Property.h
+ * \brief
+ *
+ * LinderScript Database Compiler
+ *
+ * \version 0.8.10c
+ * \date 30/07/2010
+ * \author Sergey Kosarevsky, 2005-2010
+ * \author Viktor Latypov, 2007-2010
+ * \author support@linderdaum.com http://www.linderdaum.com
+ */
+
+#ifndef __Property__h__included__
+#define __Property__h__included__
+
+#include <string>
+using namespace std;
+
+struct clDatabase;
+
+struct clProperty
+{
+   clDatabase* FDatabase;
+
+   /// where it resides
+   string FClassName;
+
+   /// to-string converter, can be determined automatically from property type
+   string ToStringConverter;
+   /// from-string converter, can be determined automatically from property type
+   string FromStringConverter;
+
+   /// type of the property - if the FieldName is specified, then it is autodetected
+   string Type;
+
+   /// name of the property
+   string Name;
+
+   /// textual description of the property
+   string Description;
+
+   /// category of the property
+   string Category;
+
+   /// if it is a get-property, then this method must be specified
+   string Getter;
+   /// if it is a set-property, then this method must be specified
+   string Setter;
+
+   /// 'get' method for indexed property access - C++/CLI specific
+   string NetIndexedGetter;
+   /// 'set' method for indexed property access - C++/CLI specific
+   string NetIndexedSetter;
+
+   /// if it is a direct field access, then this field accessor is defined
+   string FieldName;
+
+   /// if the property is indexed, then this type is specified - int, string or whatever
+   string IndexType;
+
+   /// if the property is indexed, then this is the number-of-elements function
+   string Counter;
+
+   /// validator function (or <default>)
+   string Validator;
+
+   /// non-standart error reporting function (serialization)
+   string ErrorLogger;
+
+   //////// Methods ////
+
+   /// Internal parameter parser
+   void SetParam( const string& ParamName, const string& ParamValue );
+
+   /// Convert property description to string
+   string ToString() const;
+
+   /// Convert string to property description, returning error code is something is wrong
+   string FromString( const string& P );
+
+   /// Check the validity of every parameter and their combinations
+   string Validate();
+
+   /// Scripted declaration
+   string GetScriptDeclaration() const;
+
+#pragma region Serialization stuff
+
+   string GetSaveCode() const;
+   string GetLoadCode() const;
+
+   string GetRegistrationCode() const;
+   string GetLoadSaveDeclarations() const;
+
+   bool Saveable() const;
+   bool Loadable() const;
+
+   string GetFromStringConverter() const;
+   string GetToStringConverter() const;
+
+#pragma endregion
+
+#pragma region .NET stuff
+
+   /// Check if it is an indexed property
+   inline bool IsIndexed() const { return !IndexType.empty(); }
+
+   /// DEFINE_INDEXER_STUFF
+   string GetIndexerStuffDefinition() const;
+
+   /// INIT_INDEXER_STUFF
+   string GetIndexerStuffInitialization() const;
+
+   /// DECLARE_PROPERTY string formation
+   string DeclareNETProperty() const;
+
+   string GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const string& Conv ) const;
+
+#pragma endregion
+};
+
+#endif

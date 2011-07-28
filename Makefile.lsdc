@@ -1,0 +1,13 @@
+include Makefile.inc
+
+LSDCOBJS = out/LSDC.o out/FileWalker.o
+
+out/%.o: src/%.cpp
+	$(CC) -o $@ -c $^ $(CXXFLAGS)
+	
+out/FileWalker.o: libsrc/FileWalker.cpp
+	$(CC) -o $@ -c $^ $(CXXFLAGS)
+	
+
+lsdc: $(LSDCOBJS)
+	$(CC) -o LSDC $(LSDCOBJS) out/liblsdc.a -lstdc++ 

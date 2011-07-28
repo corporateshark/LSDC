@@ -1,0 +1,15 @@
+Автогенерятся .NET-врапперы для всех классов, указанных в файле ExportedNETTypes.list
+
+Для отображения скалярных и POD-типов в типы .NET используется файл
+ToNETTypes.list, с форматом
+
+<Имя native-типа> <Имя .NET-типа>  <pod|scalar>   <преобразователь в .NET-тип>  <преобразователь из .NET-типа>
+
+Например, 
+
+LString         System::String     pod     LNativeConverter::ToNetString    LNativeConverter::FromNetString
+
+Допускаются множественные имена отображаемых типов. Т.е., типу System::String соответствуют
+и LString, и string, и LStringBuffer - в первых двух случаях используются одинаковые конвертеры, для буфера - отдельный.
+
+При указании признака "pod" к .NET-типу добавляется признак "^" (ссылка).
