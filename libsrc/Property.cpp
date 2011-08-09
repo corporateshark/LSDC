@@ -4,10 +4,10 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.8.10c
- * \date 30/07/2010
- * \author Sergey Kosarevsky, 2005-2010
- * \author Viktor Latypov, 2007-2010
+ * \version 0.9.22
+ * \date 09/08/2011
+ * \author Sergey Kosarevsky, 2005-2011
+ * \author Viktor Latypov, 2007-2011
  * \author support@linderdaum.com http://www.linderdaum.com
  */
 
@@ -580,6 +580,11 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const
       FIX_TRAILING_COMMA()
 	  res += Conv;
    }
+
+	if ( !IsScalar && !IsArray && !EmptyFlag && Load )
+	{
+		res += ", " + Type;
+	}
 
    res += string( ")\n" );
 
