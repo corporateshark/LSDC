@@ -314,3 +314,228 @@ void GenerateMethodBinders( std::ostream& Out, int NumParams )
    Out << "*/" << endl;
    Out << endl;
 }
+
+void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Const, bool Volatile )
+{
+   Out << endl;
+   Out << endl;
+   Out << "//////////////////" << endl;
+   Out << "// Params count: " << ParamsCount << endl;
+   Out << "//////////////////" << endl;
+
+   int SpaceCount = 19;
+
+//   if ( Function ) { SpaceCount = 40; }
+
+   if ( Static ) { SpaceCount -= 9; }
+
+   // generate template header
+	Out << "template <" << ( ( Static ) ? "" : "class T" );
+	Out << ( ( Static ) ? "" : ", " ) << "typename ReturnType";
+	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
+	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
+	Out << ">" << endl;
+   Out << "class clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << " : public iAsyncCapsule" << endl;
+   Out << "{" << endl;
+
+	// generate typedefs
+	if ( Static )
+	{
+		Out << "	typedef ReturnType ( *FuncPtr )(";
+
+		WriteItemList( Out, "", "", false, ParamsCount );
+
+		Out << ");" << endl;
+		Out << "	FuncPtr    FFuncPtr;" << endl;
+	}
+	else
+	{
+		Out << "	typedef ReturnType ( T::*MethodPtr )(";
+
+		WriteItemList( Out, "", "", false, ParamsCount );
+
+		Out << ")";
+
+		if ( Const ) Out << " const";
+		if ( Volatile ) Out << " volatile";
+		
+		Out << ";" << endl;
+
+		Out << "	MethodPtr    FMethodPtr;" << endl;
+		Out << "	T*           FObjectAddr;"  << endl;
+	}
+
+	// generate parameters' containers
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << "	P" << i << " FP" << i << ";" << endl;
+	}
+
+   Out << "public:" << endl;
+
+	// generate constructor
+	Out << "	explicit clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
+	Out << "(";
+	if ( Static )
+	{
+		Out << " FuncPtr Ptr";
+	}
+	else
+	{
+		Out << " MethodPtr Ptr, T* ObjectAddr";
+	}
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << ", P" << i << " p" << i;
+	}
+	Out << " ):";
+	if ( Static )
+	{
+		Out << "FFuncPtr( Ptr )";
+	}
+	else
+	{
+		Out << "FMethodPtr( Ptr ), FObjectAddr( ObjectAddr )";
+	}
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << ", FP" << i << "( p" << i << " )";
+	}
+	Out << " {}" << endl;
+
+	// generate invokator
+   Out << "	virtual void        Invoke() { ( ";
+
+	if ( Static )
+	{
+		Out << "*FFuncPtr";
+	}
+	else
+	{
+		Out << "FObjectAddr->*FMethodPtr";
+	}
+
+	Out << " )( ";
+
+	WriteItemList( Out, "", "F", false, ParamsCount );
+
+	Out << " ); } " << endl;
+
+   Out << "};";
+   Out << endl << endl;
+
+	// generate binder
+	Out << "template <" << ( ( Static ) ? "" : "class T" );
+	Out << ( ( Static ) ? "" : ", " ) << "typename ReturnType";
+	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
+	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
+	Out << ">" << endl;
+	Out << "inline iAsyncCapsule* BindCapsule( ";
+	if ( Static )
+	{
+		Out << "ReturnType ( *FuncPtr )(";
+
+		WriteItemList( Out, "", "", false, ParamsCount );
+
+		Out << ")";
+	}
+	else
+	{
+		Out << "ReturnType ( T::*MethodPtr )(";
+
+		WriteItemList( Out, "", "", false, ParamsCount );
+
+		Out << ")";
+
+		if ( Const ) Out << " const";
+		if ( Volatile ) Out << " volatile";
+
+		Out << ", T* ObjectAddr";
+	}
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << ", P" << i << " p" << i;
+	}
+
+	Out << " )" << endl;
+
+	Out << "{" << endl;
+	Out << "	return new ";
+//	clCapsuleParams0_Method_Const<T, ReturnType>( MethodPtr, ObjectAddr );
+	Out << "clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
+	Out << "<";
+	if ( !Static ) Out << "T, ";
+   Out << "ReturnType";
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << ", P" << i;
+	}
+	Out << ">(";
+
+	if ( Static )
+	{
+		Out << " FuncPtr";
+	}
+	else
+	{
+		Out << " MethodPtr, ObjectAddr";
+	}
+	for ( int i = 0; i != ParamsCount; i++ )
+	{
+		Out << ", p" << i;
+	}
+
+	Out << " );" << endl;
+	Out << "}" << endl;
+}
+
+void GenerateCapsules( std::ostream& Out, int NumParams )
+{
+   Out << "/**" << endl;
+   Out << " * \\file AsyncCapsule.h" << endl;
+   Out << " * \\brief Async calls capsule" << endl;
+   Out << " * \\version 0.6.02" << endl;
+   Out << " * \\date 29/12/2011" << endl;
+   Out << " * \\author Sergey Kosarevsky, 2011" << endl;
+   Out << " * \\author support@linderdaum.com http://www.linderdaum.com" << endl;
+   Out << " */" << endl;
+   Out << endl;
+   Out << "#ifndef _AsyncCapsule_h_" << endl;
+   Out << "#define _AsyncCapsule_h_" << endl;
+   Out << endl;
+   Out << "#include \"Platform.h\"" << endl;
+   Out << endl;
+   Out << "class iAsyncCapsule" << endl;
+   Out << "{" << endl;
+   Out << "public:" << endl;
+   Out << "	virtual void Invoke() = 0;" << endl;
+   Out << "};" << endl;
+   Out << endl;
+
+   for ( int i = 0; i < NumParams + 1 ; i++ )
+   {
+      // static
+      GenerateCapsule( Out, true, i, false, false );
+
+		// non-const non-volatile
+		GenerateCapsule( Out, false, i, false, false );
+
+		// const non-volatile
+		GenerateCapsule( Out, false, i, true, false );
+
+		// non-const volatile
+		GenerateCapsule( Out, false, i, false, true );
+
+		// const volatile
+		GenerateCapsule( Out, false, i, true, true );
+   }
+
+
+   Out << "#endif" << endl;
+   Out << endl;
+   Out << "/*" << endl;
+   Out << " * 29/12/2011" << endl;
+   Out << "     Autogenerated via LSDC" << endl;
+   Out << "*/" << endl;
+   Out << endl;
+}

@@ -56,7 +56,10 @@ vector<string> PackageInDirs;
   3) "-gen-bind" or "--generate-binders" switch produces method binders used in RTTI/Script
     Next parameter specifies the maximum number of the method to bind
 
-  4) "--package" or "-p" specifies another input directory with a native (C++) package
+  4) "-gen-cap" or "--generate-capsules" switch produces async capsules
+    Next parameter specifies the maximum number of the method to bind
+
+  5) "--package" or "-p" specifies another input directory with a native (C++) package
 */
 void ProcessCommandLine( int argc, char** argv )
 {
@@ -136,6 +139,26 @@ void ProcessCommandLine( int argc, char** argv )
 
          exit( 0 );
       }
+      else if ( OptionName == "-gen-cap" || OptionName == "--generate-capsules" )
+      {
+         CheckArgs( i + 1, argc, "Maximum number of parameters expected for capsules" );
+
+         i++;
+
+         int NumParams = atoi( argv[i] );
+
+         if ( NumParams < 1 || NumParams > 30 )
+         {
+            cout << "Invalid number of method parameters for capsules: " << NumParams << endl;
+            exit( 255 );
+         }
+
+         std::ofstream Out( "AsyncCapsule.h" );
+
+         GenerateCapsules( Out, NumParams );
+
+         exit( 0 );
+      }
       else if ( OptionName == "-p" || OptionName == "--package" )
       {
          CheckArgs( i + 1, argc, "Package directory name expected for option --package" );
@@ -166,6 +189,11 @@ void Banner()
 
 int main( int argc, char** argv )
 {
+	/*
+	std::ofstream Out( "C:/trunk.git/Src/Generated/AsyncCapsule.h" );
+
+	GenerateCapsules( Out, 11 );
+*/
    Banner();
 
    /// Local package database
