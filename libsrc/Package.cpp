@@ -7,9 +7,9 @@ using std::endl;
 #if (defined(_WIN32) || defined(_WIN64))
 #include <direct.h>
 #include <windows.h>
-#endif
-
-#ifdef __linux__
+//#endif
+#else
+//#ifdef __linux__
 #include <time.h>
 #include <dirent.h>
 #include <libgen.h>
