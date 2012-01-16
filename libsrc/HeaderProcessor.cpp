@@ -62,16 +62,25 @@ inline bool FindCharOutOfBraces( const string& Line, char ch )
 /// Is it an internal LSDC declaration of class property ?
 inline bool IsPropertyDescriptionLine( const string& S )
 {
-   int PropertyPos = S.find( "Property(" );
+	string S1 = TrimSpaces( S );
+
+   int PropertyPos = S1.find( "Property(" );
    bool PropertySign = ( PropertyPos != -1 );
 
    // check if it really a property, not some iProperty destructor
    if ( PropertyPos > 0 )
    {
-      char cc = S[PropertyPos-1];
+      char cc = S1[PropertyPos-1];
 
       if ( ( cc != ' ' ) && ( cc != '*' ) ) { return false; }
    }
+	else
+	{
+		// new syntax
+		PropertyPos = S1.find( "PROPERTY(" );
+
+		PropertySign = ( PropertyPos == 0 );
+	}
 
    return PropertySign;
 }
