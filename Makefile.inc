@@ -1,4 +1,4 @@
 AR=ar
 CC=g++
-CPPFLAGS=-g -I ./src -I ./libsrc
+CPPFLAGS=-O3 -g -I ./src -I ./libsrc
 CXXFLAGS= $(CPPFLAGS)
