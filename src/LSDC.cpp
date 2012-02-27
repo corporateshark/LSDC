@@ -35,6 +35,29 @@ bool DumpStatistics = true;
 /// Declare the list of package directories to be processed
 vector<string> PackageInDirs;
 
+void Help()
+{
+   cout << "LSDC [-v|-s] [-stats] [-log] [-no-methods] -p <path> [-p <path>...] [--exclude <filename>...]" << endl;
+   cout << "LSDC --generate-opcodes" << endl;
+   cout << "LSDC --generate-functors" << endl;
+   cout << "LSDC --generate-binders" << endl;
+   cout << "LSDC --generate-capsules" << endl;
+   cout << endl;
+   cout << " -v          --verbose" << endl;
+   cout << " -s          --silent" << endl;
+   cout << " -stats      --statistics" << endl;
+   cout << " -no-methods --disable-method-export" << endl;
+   cout << "             --no-export-shortcuts" << endl;
+   cout << "             --exclude" << endl;
+   cout << " -log        --enable-logging" << endl;
+   cout << " -gen-op     --generate-opcodes" << endl;
+   cout << " -gen-func   --generate-functors" << endl;
+   cout << " -gen-bind   --generate-binders" << endl;
+   cout << " -gen-cap    --generate-capsules" << endl;
+   cout << " -p          --package" << endl;
+   cout << endl;
+}
+
 /**
   Here we read each command line argument
 
@@ -206,6 +229,12 @@ int main( int argc, char** argv )
 
    /// Local package database
    clDatabase DB;
+
+	if ( argc <= 1 )
+	{
+		Help();
+		exit( 255 );
+	}
 
    ProcessCommandLine( argc, argv );
 
