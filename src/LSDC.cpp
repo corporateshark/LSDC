@@ -69,7 +69,15 @@ void ProcessCommandLine( int argc, char** argv )
    {
       string OptionName( argv[i] );
 
-      if ( OptionName == "-stats" || OptionName == "--statistics" )
+      if ( OptionName == "-v" || OptionName == "--verbose" )
+      {
+         Verbose = true;
+      }
+      else if ( OptionName == "-s" || OptionName == "--silent" )
+      {
+         Verbose = false;
+      }
+		else if ( OptionName == "-stats" || OptionName == "--statistics" )
       {
          DumpStatistics = true;
       }
@@ -166,7 +174,7 @@ void ProcessCommandLine( int argc, char** argv )
 
          PackageInDirs.push_back( Dir );
 
-         cout << "Processing package directory: " << Dir << endl;
+			if ( Verbose ) cout << "Processing package directory: " << Dir << endl;
 
          i++;
       }

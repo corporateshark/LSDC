@@ -599,9 +599,9 @@ void clClass::WritePropertyRegistration( buffered_stream& Out ) const
       bool Save = i->Saveable();
       bool Load = i->Loadable();
 
-      if (  Save && !Load ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Getter (write-only)" << std::endl; }
+      if (  Save && !Load && Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Getter (write-only)" << std::endl; }
 
-      if ( !Save &&  Load ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Setter (read-only)"  << std::endl; }
+      if ( !Save &&  Load && Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Setter (read-only)"  << std::endl; }
 
       if ( Save && Load )
       {

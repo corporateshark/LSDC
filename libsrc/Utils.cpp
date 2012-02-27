@@ -22,6 +22,7 @@ using std::ifstream;
 bool EnableLogging          = true;
 bool ExportMethods          = true;
 bool UseExportShortcuts     = true;
+bool Verbose                = false;
 
 vector<int> PackagesProcsCounter;
 
@@ -268,7 +269,11 @@ std::vector<string> ExcludedFiles;
 void ExcludeFile( const string& Name )
 {
 	ExcludedFiles.push_back( Name );
-	std::cout << "Added exclude file: " << Name << std::endl;
+
+	if ( Verbose )
+	{
+		std::cout << "Added exclude file: " << Name << std::endl;
+	}
 }
 
 void ExcludeFiles( const vector<string>& Names )
@@ -276,7 +281,11 @@ void ExcludeFiles( const vector<string>& Names )
 	for ( size_t i = 0 ; i != Names.size() ; i++ )
 	{
 		ExcludedFiles.push_back( Names[i] );		
-		std::cout << "Added exclude file: " << Names[i] << std::endl;
+
+		if ( Verbose )
+		{
+			std::cout << "Added exclude file: " << Names[i] << std::endl;
+		}
 	}
 }
 
@@ -286,7 +295,10 @@ bool IsFileExcluded( const string& Name )
 	{
 		if ( Name == ExcludedFiles[i] )
 		{
-			std::cout << "Excluded file: " << Name << std::endl;
+			if ( Verbose )
+			{
+				std::cout << "Excluded file: " << Name << std::endl;
+			}
 
 			return true;
 		}

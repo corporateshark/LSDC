@@ -101,8 +101,11 @@ void FileWalker::Scan( const string& dirName )
       _dirName += string( "/" );
    }
 
-   cout << "Opening : " << _dirName << endl;
-   cout.flush();
+	if ( Verbose )
+	{
+	   cout << "Opening : " << _dirName << endl;
+	   cout.flush();
+	}
 
    DIR* d = opendir( _dirName.c_str() );
    struct dirent* de;
@@ -110,7 +113,7 @@ void FileWalker::Scan( const string& dirName )
    if ( d == NULL )
    {
       cout << "null dir" << endl;
-      exit( 0 );
+      exit( 255 );
    }
 
    while ( de = readdir( d ) )

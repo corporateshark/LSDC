@@ -723,7 +723,10 @@ bool clPackage::ProcessPackageInputDirectories()
 
    for ( size_t i = 0; i != FPackageInDirectories.size(); ++i )
    {
-      cout << "Building classes database for: " << FPackageInDirectories[i] << "\\" << endl;
+		if ( Verbose )
+		{
+	      cout << "Building classes database for: " << FPackageInDirectories[i] << "\\" << endl;
+		}
 
       Package_FileWalker FW;
       FW.FPackage = this;

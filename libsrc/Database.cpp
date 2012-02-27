@@ -92,7 +92,10 @@ void clDatabase::LoadPropertyMacros()
       }
    }
 
-   cout << PropertyMacrosFileName << " contains " << NumMacros << " macro definitions" << endl;
+	if ( Verbose )
+	{
+	   cout << PropertyMacrosFileName << " contains " << NumMacros << " macro definitions" << endl;
+	}
 }
 
 void clDatabase::AddClass( clClass* Class )
@@ -147,7 +150,10 @@ void clDatabase::GenerateStuff()
    // preallocate inheritance cache
    int Size = GlobalClassesList.size() * GlobalClassesList.size();
 
-   cout << "Allocating " << Size << " bytes for inheritance cache (" << GlobalClassesList.size() << " classes in global list)" << endl;
+	if ( Verbose )
+	{
+	   cout << "Allocating " << Size << " bytes for inheritance cache (" << GlobalClassesList.size() << " classes in global list)" << endl;
+	}
 
    InheritanceCache = new char[ Size ];
 
