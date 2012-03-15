@@ -13,6 +13,9 @@
 
 #include "FileWalker.h"
 
+// for Verbose flag
+#include "Utils.h"
+
 #ifdef _WIN32
 
 // windows-based environment
