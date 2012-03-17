@@ -64,25 +64,9 @@ inline bool IsPropertyDescriptionLine( const string& S )
 {
 	string S1 = TrimSpaces( S );
 
-   int PropertyPos = S1.find( "Property(" );
-   bool PropertySign = ( PropertyPos != -1 );
+   int PropertyPos = S1.find( "PROPERTY(" );
 
-   // check if it really a property, not some iProperty destructor
-   if ( PropertyPos > 0 )
-   {
-      char cc = S1[PropertyPos-1];
-
-      if ( ( cc != ' ' ) && ( cc != '*' ) ) { return false; }
-   }
-	else
-	{
-		// new syntax
-		PropertyPos = S1.find( "PROPERTY(" );
-
-		PropertySign = ( PropertyPos == 0 );
-	}
-
-   return PropertySign;
+   return ( PropertyPos == 0 );
 }
 
 /// Remove stuff from Constructor
