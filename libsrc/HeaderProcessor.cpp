@@ -487,6 +487,8 @@ bool clHeaderProcessor::ReadClassNamesAndAttributes( int ClassNameOffset, clClas
 
    string BaseClasses;
 
+	Line = TrimComments( Line );
+
    size_t Pos = Line.find( ":" );
    size_t EndPos = Line.length();
 
