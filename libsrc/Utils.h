@@ -4,8 +4,8 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.9.25
- * \date 27/02/2012
+ * \version 0.9.26
+ * \date 17/03/2012
  * \author Sergey Kosarevsky, 2005-2012
  * \author Viktor Latypov, 2007-2011
  * \author support@linderdaum.com http://www.linderdaum.com
@@ -37,9 +37,9 @@ extern bool Verbose;
 
 const char TAB_CHAR = 0x9;
 
-const string EngineVersion = "0.6.08";
-const string LSDCVersion = "0.9.25";
-const string LSDCDate = "27/02/2012";
+const string EngineVersion = "0.6.10";
+const string LSDCVersion = "0.9.26";
+const string LSDCDate = "17/03/2012";
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 
 typedef vector<string>    clStringsList;
@@ -84,14 +84,22 @@ inline string TrimComments( const string& Line )
 {
    size_t CommentStart = Line.find( "//" );
 
-   if ( CommentStart != -1 )
+	size_t Comment1 = Line.find( "/*" );
+	size_t Comment2 = Line.find( "*/" );
+
+   if ( CommentStart != -1 && CommentStart < Comment1 )
 	{
 		return Line.substr( 0, CommentStart );
 	}
    else
 	{ 
-		return Line;
+		if ( Comment1 != -1 && Comment2 != -1 && Comment2 > Comment1 )
+		{
+			return Line.substr( 0, Comment1 ) + " " + Line.substr( Comment2+2, Line.length()-1 );
+		}
 	}
+
+	return Line;
 }
 
 void ExcludeFile( const string& Name );
