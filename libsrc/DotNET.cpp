@@ -99,7 +99,7 @@ void clPackage::GenerateDotNETWrappers()
       clClass& Class = i->second;
       string name = Class.FClassName;
 
-      if ( name != "" && Class.FNetExportable )
+      if ( !name.empty() && Class.FNetExportable )
       {
          Class.FNetExportable = true;
 
@@ -193,6 +193,21 @@ void clPackage::GenerateDotNETWrappers()
          {
             GenerateNETDowncasterImpl( Class, Out2 );
             Out2 << endl;
+         }
+
+//		 cout << "Trying .net prop-impls for " << Class.FClassName << ", num_props = " << Class.FProperties.size() << endl;
+         /// property implementors
+         for(clPropertiesList::iterator pp = Class.FProperties.begin() ; pp != Class.FProperties.end() ; pp++)
+         {
+            string Impl = pp->DeclareNETProperty_Impl();
+
+//			cout << "impl(" << pp->Name << ") = " << Impl << endl;
+
+            if(!Impl.empty())
+            {
+               Out2 << Impl;
+               Out2 << endl << endl;
+            }
          }
       }
       else

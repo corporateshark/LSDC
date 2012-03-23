@@ -328,7 +328,7 @@ string clProperty::DeclareNETProperty() const
          // it is some class
          PropertyDeclarator = "DECLARE_WRAPPER_PROPERTY";
 
-         if ( Getter == "" && Setter == "" )
+		 if ( Getter.empty() && Setter.empty() )
          {
             PropertyDeclarator += "_DIRECT"; // direct access to native field
          }
@@ -372,14 +372,14 @@ string clProperty::DeclareNETProperty() const
 
    if ( AddNativeConverters )
    {
-      if ( Getter != "" || FieldName != "" )
+      if ( !Getter.empty() || !FieldName.empty() )
       {
          string NetConverter = FDatabase->ToNetConverter[Type];
 
          AddParam_NoValue( PropertyParams, NetConverter );
       }
 
-      if ( Setter != "" || FieldName != "" )
+	  if ( !Setter.empty() || !FieldName.empty() )
       {
          string NetConverter = FDatabase->FromNetConverter[Type];
 
@@ -388,6 +388,38 @@ string clProperty::DeclareNETProperty() const
    }
 
    return PropertyDeclarator + string( "(" ) + PropertyParams + string( ")" );
+}
+
+/// Return empty string if no implementation is assumed
+
+// #define DECLARE_WRAPPER_PROPERTY_DIRECT_IMPL(TheClassName, ManagedType, ManagedName, NativeName)
+
+string clProperty::DeclareNETProperty_Impl() const
+{
+   if ( !IndexType.empty() ) { return ""; }
+
+   if ( !FDatabase->IsScalarType( Type ) )
+   {
+      // if it is one of the wrapped classes - search in database
+      if ( FDatabase->IsWrappedClass( Type ) )
+      {
+         // it is some class
+         if ( Getter.empty() && Setter.empty() )
+         {
+            // direct access to native field
+            string Result("DECLARE_WRAPPER_PROPERTY_DIRECT_IMPL(");
+
+            Result += FClassName + string(", ");
+            Result += Type + string(", ");
+            Result += Name + string(", ");
+            Result += FieldName + string(")");
+
+            return Result;
+         }
+      }
+   }
+
+   return "";
 }
 
 string clProperty::GetScriptDeclaration() const

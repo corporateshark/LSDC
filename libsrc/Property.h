@@ -115,6 +115,9 @@ struct clProperty
    /// DECLARE_PROPERTY string formation
    string DeclareNETProperty() const;
 
+   /// DECLARE_PROPERTY_IMPL for the .cpp
+   string DeclareNETProperty_Impl() const;
+
    string GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const string& Conv ) const;
 
 #pragma endregion
