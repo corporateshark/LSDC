@@ -398,6 +398,12 @@ string clProperty::DeclareNETProperty_Impl() const
 {
    if ( !IndexType.empty() ) { return ""; }
 
+   string AccessModifier = "";
+
+   if ( !Getter.empty() ) { AccessModifier += string( "_GET" ); }
+
+   if ( !Setter.empty() ) { AccessModifier += string( "_SET" ); }
+
    if ( !FDatabase->IsScalarType( Type ) )
    {
       // if it is one of the wrapped classes - search in database
@@ -412,7 +418,30 @@ string clProperty::DeclareNETProperty_Impl() const
             Result += FClassName + string(", ");
             Result += Type + string(", ");
             Result += Name + string(", ");
-            Result += FieldName + string(")");
+            Result += FieldName;
+
+            Result += string(")");
+
+            return Result;
+         } else
+         if(!AccessModifier.empty())
+         {
+            string Result(string("DECLARE_WRAPPER_PROPERTY") + AccessModifier + string("_IMPL("));
+
+            Result += FClassName + string(", ");
+            Result += Type + string(", ");
+            Result += Name + string(", ");
+
+            bool NeedComma = false;
+
+            if(!Getter.empty()) { Result += Getter; NeedComma = true; }
+            if(!Setter.empty())
+            {
+               if(NeedComma) { Result += string(", "); }
+               Result += Setter;
+            }
+
+            Result += string(")");
 
             return Result;
          }
