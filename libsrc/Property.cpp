@@ -368,7 +368,7 @@ string clProperty::DeclareNETProperty() const
 
    if ( !Getter.empty() ) { AddParam_NoValue( PropertyParams, Getter ); }
 
-   if ( !Wrapped ) if ( !Setter.empty() ) { AddParam_NoValue( PropertyParams, Setter ); }
+   /*if ( !Wrapped )*/ if ( !Setter.empty() ) { AddParam_NoValue( PropertyParams, Setter ); }
 
    if ( AddNativeConverters )
    {
