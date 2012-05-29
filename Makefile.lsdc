@@ -10,4 +10,4 @@ out/FileWalker.o: libsrc/FileWalker.cpp
 	
 
 lsdc: $(LSDCOBJS)
-	$(CC) -o LSDC $(LSDCOBJS) out/liblsdc.a -lstdc++ 
+	$(CC) -m32 -o LSDC $(LSDCOBJS) out/liblsdc.a -lstdc++ 
