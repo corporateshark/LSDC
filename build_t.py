@@ -7,6 +7,6 @@ import os
 if not os.path.exists( "Out" ): os.makedirs( "Out" )
 if os.path.exists( "Out/liblsdc.a" ): os.remove( "Out/liblsdc.a" )
 
-os.system("make lsdclib -f Makefile.lib")
-os.system("make lsdctest -f Makefile.test")
-os.system("make lsdc -f Makefile.lsdc")
+os.system("make -j2 lsdclib -f Makefile.lib")
+os.system("make -j2 lsdctest -f Makefile.test")
+os.system("make -j2 lsdc -f Makefile.lsdc")
