@@ -638,6 +638,9 @@ bool clMethod::GenerateMethodDotNETImpl( buffered_stream& Out ) const
       Out << "\t" << ConversionCode << ";";
       Out.endl(); // << endl;
 
+      /// Out-parameters handling
+//      if(FDatabase->IsReference(FArgTypes[i]) && !FDatabase->IsConstType(FArgTypes[i])) { LocalParamList += string("*"); }
+
       LocalParamList += ParamVarName;
    }
 
