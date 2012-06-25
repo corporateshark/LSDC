@@ -403,8 +403,29 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	}
 	Out << " {}" << endl;
 
+	// parameter setters
+	if(ParamsCount > 0)
+	{
+		Out << endl;
+
+		Out << "\tvirtual bool SetParameter(int Index, iParameter* TheParam)" << endl << "\t{" << endl;
+
+		for(int i = 0 ; i < ParamsCount ; i++)
+		{
+			Out << "\t\tif(Index == " << i << ")" << endl << "\t\t{" << endl;
+			Out << "\t\t\tFP" << i << " = *(typename TypeTraits<P" << i << ">::ReferredType*)( TheParam->GetNativeBlock() );" << endl;
+			Out << "\t\t\treturn true;" << endl;
+			Out << "\t\t}" << endl << endl;
+		}
+
+		Out << "\t\treturn false;" << endl;
+		Out << "\t}" << endl;
+	}
+
+	Out << endl;
+
 	// generate invokator
-   Out << "	virtual void        Invoke() { ( ";
+	Out << "	virtual void        Invoke() { ( ";
 
 	if ( Static )
 	{
@@ -504,11 +525,15 @@ void GenerateCapsules( std::ostream& Out, int NumParams )
    Out << "#define _AsyncCapsule_h_" << endl;
    Out << endl;
    Out << "#include \"Platform.h\"" << endl;
+   Out << "#include \"Core/RTTI/Parameters.h\"" << endl;
    Out << endl;
    Out << "class iAsyncCapsule" << endl;
    Out << "{" << endl;
    Out << "public:" << endl;
-   Out << "	virtual void Invoke() = 0;" << endl;
+   Out << "\t/// Run the method" << endl;
+   Out << "\tvirtual void Invoke() = 0;" << endl << endl;
+   Out << "\t/// Set the i-th parameter value. False if no parameter with this index" << endl;
+   Out << "\tvirtual bool SetParameter(int Index, iParameter* TheParam) { return false; }" << endl;
    Out << "};" << endl;
    Out << endl;
 
