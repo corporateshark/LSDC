@@ -381,7 +381,12 @@ bool clHeaderProcessor::TryParseStaticMethod()
       exit( 255 );
    }
 
-   if ( ( Line.find( "<" ) != -1 ) || ( Line.find( ">" ) != -1 ) ) { return false; }
+   if ( ( Line.find( "<" ) != -1 ) || ( Line.find( ">" ) != -1 ) )
+	{
+      if ( Verbose ) cout << "Skipping template: " << Line << endl;
+
+		return false;
+	}
 
    clMethod NewMethod;
    NewMethod.FromString( Line );
@@ -666,6 +671,7 @@ bool clHeaderProcessor::ParseMethodProto( clClass* TheClass )
       {
          if ( ( Line.find( "template " ) != -1 ) || ( Line.find( "<" ) != -1 ) )
          {
+				if ( Verbose ) cout << "Skipping template: " << Line << endl;
             return true; // skip and continue;
          }
       }

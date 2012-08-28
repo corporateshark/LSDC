@@ -49,7 +49,7 @@ string clProperty::ToString() const
    string ParamList = "";
 
    AddParam( ParamList, "Name",        TrimQuotes( Name ) );
-   AddParam( ParamList, "Type",        Type );
+   AddParam( ParamList, "Type",        SmartPointer ? Type + "^" : Type );
    AddParam( ParamList, "Description", Description );
    AddParam( ParamList, "Category",    Category );
    AddParam( ParamList, "Getter",      Getter );
@@ -78,7 +78,7 @@ inline bool AssignPrm( string& _Name, const string& ActualName, const string& PN
    return false;
 }
 
-#define AssignP(_Name) if (AssignPrm(_Name, #_Name, ParamName, ParamValue)) return;
+#define AssignP(_Name) AssignPrm(_Name, #_Name, ParamName, ParamValue);
 
 void clProperty::SetParam( const string& ParamName, const string& ParamValue )
 {
@@ -97,6 +97,11 @@ void clProperty::SetParam( const string& ParamName, const string& ParamValue )
    AssignP( FieldName )
    AssignP( IndexType )
    AssignP( Counter )
+
+	if ( ParamName == "Type" )
+	{
+		SmartPointer = ( !ParamValue.empty() ) && ( ParamValue[ ParamValue.length() - 1 ] == '^' );
+	}
 }
 
 #undef AssignP
@@ -140,6 +145,14 @@ string clProperty::FromString( const string& P )
 
       SetParam( _Name, _Val );
    }
+
+	if ( SmartPointer )
+	{
+		// drop the last ^ from the type name
+		Type = Type.substr( 0, Type.length() - 1 );
+
+		if ( Verbose ) cout << "Smartpointer property: " << Name << " " << Type << endl;
+	}
 
    // validity check
    return Validate();
@@ -297,6 +310,14 @@ string clProperty::GetIndexerStuffInitialization() const
 
 string clProperty::DeclareNETProperty() const
 {
+	if ( SmartPointer )
+   {
+		if ( Verbose ) cout << "Skipping smartpointer property .NET declaration: " << Name << " " << Type << endl;
+
+      // TODO: declare smart pointer property to a wrapped class
+		return "";
+   }
+
    if ( !IndexType.empty() ) { return GetIndexerStuffDefinition(); }
 
    bool AddNativeConverters = false;
@@ -396,6 +417,14 @@ string clProperty::DeclareNETProperty() const
 
 string clProperty::DeclareNETProperty_Impl() const
 {
+	if ( SmartPointer )
+   {
+		if ( Verbose ) cout << "Skipping smartpointer property .NET implementation: " << Name << " " << Type << endl;
+
+      // TODO: declare smart pointer property to a wrapped class
+		return "";
+   }
+
    if ( !IndexType.empty() ) { return ""; }
 
    string AccessModifier = "";

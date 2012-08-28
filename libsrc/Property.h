@@ -21,6 +21,8 @@ struct clDatabase;
 
 struct clProperty
 {
+	clProperty():SmartPointer(false) {};
+
    clDatabase* FDatabase;
 
    /// where it resides
@@ -67,6 +69,9 @@ struct clProperty
 
    /// non-standart error reporting function (serialization)
    string ErrorLogger;
+
+	/// clPtr<> wrapped
+	bool SmartPointer;
 
    //////// Methods ////
 

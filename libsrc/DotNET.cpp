@@ -569,6 +569,11 @@ bool clMethod::CanExportToNET() const
    {
       string t = TrimSpaces( FDatabase->StripTypeName( TrimSpaces( FArgTypes[i] ) ) );
 
+		if ( FDatabase->IsSmartPointer( t ) )
+		{
+			// TODO:
+		}
+
       if ( FDatabase->IsTemplateType( t ) ) { return false; }
 
       // the pointer to void

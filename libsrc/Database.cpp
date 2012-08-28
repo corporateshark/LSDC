@@ -531,6 +531,11 @@ bool clDatabase::IsPointer( const string& TypeName )
    return ( TypeName[ TypeName.size()-1 ] == '*' );
 }
 
+bool clDatabase::IsSmartPointer( const string& TypeName )
+{
+	return ( TypeName.find( "clPtr<" ) == 0 );
+}
+
 bool clDatabase::IsConstType( const string& TypeName )
 {
    return ( TypeName.find( "const " ) != -1 );
