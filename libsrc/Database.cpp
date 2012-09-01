@@ -404,7 +404,7 @@ string clDatabase::GetAppropriateNetTypeForParameter( const string& type )
 {
    if ( !MapsToNET( type ) )
    {
-//    cout << "Failed checking[" << type << "]" << endl;
+		cout << "Failed checking[" << type << "]" << endl;
       return "";
    }
 
@@ -414,6 +414,12 @@ string clDatabase::GetAppropriateNetTypeForParameter( const string& type )
 //    cout << "Scalar type " << type << " maps to << " << res << endl;
       return res;
    }
+	else if ( IsSmartPointer( type ) )
+	{
+		string res = type;
+		cout << "Smartpointer type " << type << endl;
+		return res;
+	}
    else if ( IsPODType( type ) )
    {
       string res = NativeToNet[type] + string( "^" );

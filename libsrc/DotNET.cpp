@@ -569,12 +569,7 @@ bool clMethod::CanExportToNET() const
    {
       string t = TrimSpaces( FDatabase->StripTypeName( TrimSpaces( FArgTypes[i] ) ) );
 
-		if ( FDatabase->IsSmartPointer( t ) )
-		{
-			// TODO:
-		}
-
-      if ( FDatabase->IsTemplateType( t ) ) { return false; }
+      if ( FDatabase->IsTemplateType( t ) && !FDatabase->IsSmartPointer( t ) ) { return false; }
 
       // the pointer to void
       if ( t == "void" ) { return false; }
@@ -584,7 +579,7 @@ bool clMethod::CanExportToNET() const
 
    string ret = TrimSpaces( FDatabase->StripTypeName( TrimSpaces( FReturnType ) ) );
 
-   if ( FDatabase->IsTemplateType( ret ) ) { return false; }
+   if ( FDatabase->IsTemplateType( ret ) && !FDatabase->IsSmartPointer( ret ) ) { return false; }
 
    if ( ret == "void" && FDatabase->IsPointer( TrimSpaces( FReturnType ) ) ) { return false; }
 
