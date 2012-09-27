@@ -535,7 +535,7 @@ string clDatabase::GetNativeToNetConversion( const string& NativeVarName, const 
 
       // it is a wrapped class
 //    return string("TO_NET_OBJECT(") + NativeVarName + string(", ") + TheNamespace + NativeType + string(")");
-      return string( "(" ) + NativeVarName + string( " == NULL) ? (nullptr) : ( gcnew " ) + InnerType + string( "(" ) + NativeVarName + string( IsSmartPtr ? "->GetInternalPtr()) )" : ") )" );
+      return string( "(" ) + NativeVarName + string( " == NULL) ? (nullptr) : ( gcnew " ) + InnerType + string( "(" ) + NativeVarName + string( IsSmartPtr ? ".GetInternalPtr()) )" : ") )" );
    }
 }
 

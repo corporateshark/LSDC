@@ -663,8 +663,25 @@ bool clMethod::GenerateMethodDotNETImpl( buffered_stream& Out ) const
          TheNamespace = "::"; // TODO : get some map NativeNamespaces[<TypeName>]
       }
 
+
+      string RealType = FReturnType;
+
+      if(FDatabase->IsSmartPointer( RealType ))
+      {
+          string InnerType = FDatabase->ExtractSmartPointerType( RealType );
+
+         // TODO : insert namespace of the NativeType(FReturnType)
+
+          RealType = string("clPtr<::") + InnerType + string(">");
+      }
+
       // TODO : insert namespace of the NativeType(FReturnType)
-      Out << /*<< Here comes the namespace << */ TheNamespace << FReturnType << " NativeResult = ";
+      Out << /*<< Here comes the namespace << */ TheNamespace << 
+//	FReturnType 
+
+        RealType
+
+	<< " NativeResult = ";
 
       // if the type is 'scalar', then insert the explicit cast
       if ( FDatabase->IsScalarType( FReturnType ) )
