@@ -458,15 +458,19 @@ string clDatabase::GetNetToNativeConversion( const string& FullType, const strin
 
       return res;
    }
-   else if ( IsSmartPointer( FullType/*NativeType*/ ) )
+   else if ( IsSmartPointer( TrimmedType /*FullType*/ /*NativeType*/ ) )
 	{
+//      cout << "using smart_ptr = " << TrimmedType << endl;
+
 		TrimmedType = ExtractSmartPointerType( TrimmedType );
+
+//      cout << "extracted smart_ptr = " << TrimmedType << endl;
 
       clClass* C = GetClassPtr( TrimmedType );
 
-      if ( !C ) { return ""; }
+      if ( !C ) { /*cout << "no class: " << TrimmedType << endl;*/ return ""; }
 
-      if ( !C->FNetExportable ) { return ""; }
+      if ( !C->FNetExportable ) { /*cout << "not an net-exportable class: " << TrimmedType << endl;*/ return ""; }
 
 //    cout << "Using FROM_NET_OBJ" << endl;
 
