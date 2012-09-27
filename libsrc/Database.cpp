@@ -417,8 +417,8 @@ string clDatabase::GetAppropriateNetTypeForParameter( const string& type )
 	else if ( IsSmartPointer( type ) )
 	{
 		string res = type;
-		cout << "Smartpointer type " << type << endl;
-		return res;
+//		cout << "Smartpointer type " << type << endl;
+		return ExtractSmartPointerType( type ) + string( "^" );
 	}
    else if ( IsPODType( type ) )
    {
@@ -458,6 +458,23 @@ string clDatabase::GetNetToNativeConversion( const string& FullType, const strin
 
       return res;
    }
+   else if ( IsSmartPointer( FullType/*NativeType*/ ) )
+	{
+		TrimmedType = ExtractSmartPointerType( TrimmedType );
+
+      clClass* C = GetClassPtr( TrimmedType );
+
+      if ( !C ) { return ""; }
+
+      if ( !C->FNetExportable ) { return ""; }
+
+//    cout << "Using FROM_NET_OBJ" << endl;
+
+      string TheNamespace = "::"; // TODO : get some map NativeNamespaces[<TypeName>]
+
+      string FullNativeType = TheNamespace + TrimmedType;
+      return FullNativeType + string( "* " ) + VarName + string( " = (" ) + NetVarName + ( " == nullptr) ? NULL : (" ) + NetVarName + string( "->GetNativeObject()" ) + string( ")" );
+	}
    else if ( IsPointer( FullType/*NativeType*/ ) )
    {
       clClass* C = GetClassPtr( TrimmedType );
@@ -512,15 +529,30 @@ string clDatabase::GetNativeToNetConversion( const string& NativeVarName, const 
          TheNamespace = "::"; // TODO : get some map NativeNamespaces[<TypeName>]
       }
 
+		bool IsSmartPtr = IsSmartPointer( NativeType );
+		
+		string InnerType = ExtractSmartPointerType( NativeType );
+
       // it is a wrapped class
 //    return string("TO_NET_OBJECT(") + NativeVarName + string(", ") + TheNamespace + NativeType + string(")");
-      return string( "(" ) + NativeVarName + string( " == NULL) ? (nullptr) : ( gcnew " ) + NativeType + string( "(" ) + NativeVarName + string( ") )" );
+      return string( "(" ) + NativeVarName + string( " == NULL) ? (nullptr) : ( gcnew " ) + InnerType + string( "(" ) + NativeVarName + string( IsSmartPtr ? "->GetInternalPtr()) )" : ") )" );
    }
 }
 
 bool clDatabase::MapsToNET( const string& type )
 {
    bool res = ( ToNetConverter.count( type ) > 0 ) || IsWrappedClass( type ) || IsScalarType( type );
+
+	if ( IsSmartPointer( type ) )
+	{
+//		if ( Verbose ) { std::cout << "MapsToNET: " << type << std::endl; }
+
+		string InnerType = ExtractSmartPointerType( type );
+
+//		if ( Verbose ) { std::cout << "InnerType: " << InnerType << std::endl; }
+
+		res = IsWrappedClass( InnerType );
+	}
 
 // cout << "type[" << type << "] " << ( res ? "maps" : "does not map") << " to .NET" << endl;
 
@@ -540,6 +572,16 @@ bool clDatabase::IsPointer( const string& TypeName )
 bool clDatabase::IsSmartPointer( const string& TypeName )
 {
 	return ( TypeName.find( "clPtr<" ) == 0 );
+}
+
+string clDatabase::ExtractSmartPointerType( const string& TypeName )
+{
+	if ( IsSmartPointer( TypeName ) )
+	{
+		return TypeName.substr( 6, TypeName.size() - 7 );
+	}
+	
+	return TypeName;
 }
 
 bool clDatabase::IsConstType( const string& TypeName )

@@ -93,6 +93,8 @@ public:
    bool IsConstType( const string& TypeName );
    bool IsSmartPointer( const string& TypeName );
 
+	string ExtractSmartPointerType( const string& TypeName );
+
    ///  Remove C++ reference/pointer and const modifiers
    string StripTypeName( const string& Type );
 

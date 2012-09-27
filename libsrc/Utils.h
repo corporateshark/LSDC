@@ -37,9 +37,9 @@ extern bool Verbose;
 
 const char TAB_CHAR = 0x9;
 
-const string EngineVersion = "0.6.12";
-const string LSDCVersion = "0.9.35";
-const string LSDCDate = "28/08/2012";
+const string EngineVersion = "0.6.14";
+const string LSDCVersion = "0.9.40";
+const string LSDCDate = "28/09/2012";
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 
 typedef vector<string>    clStringsList;
