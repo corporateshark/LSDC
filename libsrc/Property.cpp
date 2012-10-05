@@ -719,6 +719,17 @@ string clProperty::GetLoadSaveDeclarations() const
          res2 += string( ")" );
 
 		 res += FDatabase->ExpandMacro( res2 );
+
+         res += string( "\n" );
+
+	/// array getter
+	res2 = string("ARRAY_PROPERTY_GETOBJECT_FUNCTION__FIELD(");
+	res2 += FieldName;
+	res2 += string( ", ") + FClassName;
+	res2 += string( ")" );
+
+		 res += FDatabase->ExpandMacro( res2 );
+
       }
 
       res += string( "\n" );
