@@ -630,13 +630,21 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 
    if ( !EmptyFlag )
    {
-      res += string( Load ? "SETTER" : "GETTER" ) + string("(");
+      res += string( Load ? "SETTER" : "GETTER" );
    }
    else
    {
       // compressed name is used for the loader function name
-      res += string( "FIELD(" );
+      res += string( "FIELD" );
    }
+
+   if(SmartPointer && Accessor && !Load && !IsArray & !IsScalar)
+   {
+      /// Accessor/Getter must decypher smart pointers
+      res += string( "_SMARTPTR");
+   }
+
+   res += string("(");
 
    string MacroName = res;
 
