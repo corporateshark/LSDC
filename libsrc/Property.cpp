@@ -618,7 +618,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 
    if(Accessor)
    {
-      res += string( Load ? "GET" : "SET" );
+      res += string( Load ? "SET" : "GET" );
    } else
    {
       res += string( Load ? "LOAD" : "SAVE" );
@@ -683,7 +683,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 	  res += Conv;
    }
 
-	if ( !IsScalar && !IsArray && !EmptyFlag && Load )
+	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor))
 	{
 		res += ", " + Type;
 	}
@@ -713,12 +713,16 @@ string clProperty::GetLoadSaveDeclarations() const
 
    if(!isArray)
    {
-/*
-      // Get-accessor
-      res += GetBinderMacro( isArray, isScalar, false,   true, GetToStringConverter() );
-      // Set-accessor
-      res += GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() );
-*/
+	   // TODO: support scalars and strings
+	   if(!isScalar)
+	   {
+          // Get-accessor
+          res += GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() );
+          // Set-accessor
+          res += GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() );
+	   } else
+	   {
+	   }
    }
    else
    {
@@ -818,7 +822,7 @@ string clProperty::GetRegistrationCode() const
       {
          // ....
       }
-   }/* else
+   } else
    {
       // Now we add the code for field contents access (i.e., iObject* GetValue(iObject* Obj) will get the Obj->FFieldForProperty)
       if(isScalar)
@@ -835,7 +839,7 @@ string clProperty::GetRegistrationCode() const
 
          res += string( "\n" );
       }
-   }*/
+   }
 
    return res;
 }
