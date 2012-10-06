@@ -600,7 +600,8 @@ string CompressSerializedName( const string& InName )
 }
 
 /// Generate some code for property serialization
-string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const string& Conv ) const
+/// If Accessor is true, then Load/Save is replaced by Get/Set
+string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, bool Load, const string& Conv ) const
 {
 // add ',' at the end if required
 #define FIX_TRAILING_COMMA() \
@@ -612,7 +613,18 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const
 
    res  = string( ( IsScalar ? "SCALAR" : "OBJECT" ) );
    res += string( ( IsArray ? "_ARRAY" : "" ) );
-   res += string( "_PROPERTY_" ) + string( Load ? "LOAD" : "SAVE" ) + string( "__" );
+
+   res += string( "_PROPERTY_" );
+
+   if(Accessor)
+   {
+      res += string( Load ? "GET" : "SET" );
+   } else
+   {
+      res += string( Load ? "LOAD" : "SAVE" );
+   }
+
+   res += string( "__" );
 
    bool EmptyFlag = Load ? Setter.empty() : Getter.empty();
 
@@ -694,11 +706,21 @@ string clProperty::GetLoadSaveDeclarations() const
    // Get/Set property has a different binding code implementation
    // loader/saver for a scalar/pod/object field
 
-   res += GetBinderMacro( isArray, isScalar,  true, GetFromStringConverter() );
+   // Loader
+   res += GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() );
+   // Saver
+   res += GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() );
 
-   res += GetBinderMacro( isArray, isScalar, false, GetToStringConverter() );
-
-   if ( isArray )
+   if(!isArray)
+   {
+/*
+      // Get-accessor
+      res += GetBinderMacro( isArray, isScalar, false,   true, GetToStringConverter() );
+      // Set-accessor
+      res += GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() );
+*/
+   }
+   else
    {
 //    Items, SerializableClass)
       res += "\n";
@@ -752,6 +774,8 @@ string clProperty::GetRegistrationCode() const
 
    string res = string( "REGISTER_PROPERTY__" );
 
+   string add_res = string( "REGISTER_PROPERTY_ACCESSORS__");
+
    string ObjPrefix = ( isScalar ? "SCALAR_" : "OBJECT_" );
 
 // std::cout << FieldName << " Getter: '" << Getter << "' Setter: '" << Setter << "'" << std::endl;
@@ -765,17 +789,28 @@ string clProperty::GetRegistrationCode() const
    {
       if ( Setter.empty() && Getter.empty() )
       {
-         res += ObjPrefix + string( "FIELD(" ) + CompressSerializedName( FieldName );
+         string CommonPart = ObjPrefix + string( "FIELD(" ) + CompressSerializedName( FieldName );
+
+         res += CommonPart;
+
+         add_res += CommonPart;
       }
       else
       {
-         res += ObjPrefix + string( "GETTER_SETTER(" ) + Name;
+         string CommonPart = ObjPrefix + string( "GETTER_SETTER(" ) + Name;
+
+         res += CommonPart;
          //+ Getter + string(", ") + Setter;
+
+         add_res += CommonPart;
       }
    }
 
-   res += string( ", " ) + FClassName + string ( ", " ) + Name + string( ")" );
-   res += string( "\n" );
+   string RegCommon = string( ", " ) + FClassName + string ( ", " ) + Name + string( ")\n" );
+
+   res += RegCommon;
+
+   add_res += RegCommon;
 
    if ( isArray )
    {
@@ -783,7 +818,24 @@ string clProperty::GetRegistrationCode() const
       {
          // ....
       }
-   }
+   }/* else
+   {
+      // Now we add the code for field contents access (i.e., iObject* GetValue(iObject* Obj) will get the Obj->FFieldForProperty)
+      if(isScalar)
+      {
+         // strings are handled differently and PODs require more params to the macro
+      } else
+      {
+         // iObject props are accessed easily
+
+         res += string( "\n" );
+    
+         /// PROPERTY_REGISTER_ACCESSORS__*
+         res += add_res;
+
+         res += string( "\n" );
+      }
+   }*/
 
    return res;
 }

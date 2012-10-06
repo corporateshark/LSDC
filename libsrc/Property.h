@@ -123,7 +123,7 @@ struct clProperty
    /// DECLARE_PROPERTY_IMPL for the .cpp
    string DeclareNETProperty_Impl() const;
 
-   string GetBinderMacro( bool IsArray, bool IsScalar, bool Load, const string& Conv ) const;
+   string GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, bool Load, const string& Conv ) const;
 
 #pragma endregion
 };
