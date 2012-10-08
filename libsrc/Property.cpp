@@ -698,7 +698,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 
    res += string( ")\n" );
 
-   return FDatabase->ExpandMacro(res);
+   return res; //FDatabase->ExpandMacro(res);
 }
 
 string clProperty::GetLoadSaveDeclarations() const
@@ -714,10 +714,17 @@ string clProperty::GetLoadSaveDeclarations() const
    // Get/Set property has a different binding code implementation
    // loader/saver for a scalar/pod/object field
 
+   // Text loader/saver
    // Loader
-   res += GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() );
+   res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
    // Saver
-   res += GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() );
+   res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
+
+   // Binary loader/saver
+   // Loader
+   res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
+   // Saver
+   res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
 
    if(!isArray)
    {
@@ -725,9 +732,9 @@ string clProperty::GetLoadSaveDeclarations() const
 	   if(!isScalar)
 	   {
           // Get-accessor
-          res += GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() );
+          res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() ) );
           // Set-accessor
-          res += GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() );
+          res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() ) );
 	   } else
 	   {
 	   }
