@@ -49,7 +49,7 @@ void clMethod::GenerateMethodStub( const clClass* OriginalClass, buffered_stream
 
    for ( size_t i = 0; i != FArgTypes.size(); ++i )
    {
-      Out << "         ParameterType<" << FArgTypes[i] << ">::Type Param" << static_cast<int>( i ) << ";" << endl;
+      Out << "         ParameterType<" << FArgTypes[i] << " >::Type Param" << static_cast<int>( i ) << ";" << endl;
 
       if ( i == FArgTypes.size() - 1 ) { Out << endl; }
    }
