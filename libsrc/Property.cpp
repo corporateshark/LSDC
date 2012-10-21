@@ -627,6 +627,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
    res += string( "__" );
 
    bool EmptyFlag = Load ? Setter.empty() : Getter.empty();
+	bool NeedType = false;
 
    if ( !EmptyFlag )
    {
@@ -642,6 +643,13 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
    {
       /// Accessor/Getter must decypher smart pointers
       res += string( "_SMARTPTR");
+   }
+	else
+   if(SmartPointer && !Accessor && Load && EmptyFlag)
+   {
+      /// Field loader must decypher smart pointers
+      res += string( "_SMARTPTR");
+		NeedType = true;
    }
 
    res += string("(");
@@ -691,7 +699,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 	  res += Conv;
    }
 
-	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor))
+	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor) || NeedType )
 	{
 		res += ", " + Type;
 	}
