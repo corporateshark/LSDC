@@ -19,10 +19,11 @@
 
 using std::ifstream;
 
-bool EnableLogging          = true;
-bool ExportMethods          = true;
-bool UseExportShortcuts     = true;
-bool Verbose                = false;
+bool EnableLogging      = true;
+bool ExportMethods      = true;
+bool UseExportShortcuts = true;
+bool Verbose            = false;
+bool DoExpandMacros     = false;
 
 vector<int> PackagesProcsCounter;
 

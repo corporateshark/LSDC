@@ -20,6 +20,8 @@ clDatabase::~clDatabase()
 
 string clDatabase::ExpandMacro(const LString& MacroString)
 {
+	if(!DoExpandMacros) { return MacroString; }
+
    int FirstBracket = MacroString.find_first_of('(');
    int num = MacroString.find_last_of(')') - FirstBracket;
    string MacroVals = MacroString.substr(FirstBracket+1, num-1);

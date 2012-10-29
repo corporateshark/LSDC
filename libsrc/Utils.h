@@ -32,6 +32,9 @@ extern bool ExportMethods;
 // reduce generated code size by using tricky macros
 extern bool UseExportShortcuts;
 
+// replace macros by their code, for debugging purposes
+extern bool DoExpandMacros;
+
 // silence is golden
 extern bool Verbose;
 

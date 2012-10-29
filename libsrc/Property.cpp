@@ -274,16 +274,16 @@ string clProperty::GetLoadCode() const
 /// DEFINE_INDEXER_STUFF
 string clProperty::GetIndexerStuffDefinition() const
 {
-   if ( IndexType.empty() ) { return ""; }
+	if ( IndexType.empty() ) { return ""; }
 
-   string res = "DEFINE_INDEXER_STUFF(";
+	string res = "DEFINE_INDEXER_STUFF(";
 
-   res += Name + string( ", " );
+	res += Name + string( ", " );
 
-   res += FDatabase->NativeToNet[IndexType] + string( ", " );
-   res += FDatabase->AddNETReferenceModifierIfNeeded( Type ) + string( ")" );
+	res += FDatabase->NativeToNet[IndexType] + string( ", " );
+	res += FDatabase->AddNETReferenceModifierIfNeeded( Type ) + string( ")" );
 
-   return res;
+	return res;
 }
 
 /// INIT_INDEXER_STUFF
@@ -293,19 +293,19 @@ string clProperty::GetIndexerStuffDefinition() const
 */
 string clProperty::GetIndexerStuffInitialization() const
 {
-   if ( IndexType.empty() ) { return ""; }
+	if ( IndexType.empty() ) { return ""; }
 
-   // TODO : if there is no indexed getter and indexed setter, we can use direct access with converters
-   // This requires careful handling of POD/Object types and To/From Netconverters
+	// TODO : if there is no indexed getter and indexed setter, we can use direct access with converters
+	// This requires careful handling of POD/Object types and To/From Netconverters
 
-   string res = "INIT_INDEXER_STUFF(";
+	string res = "INIT_INDEXER_STUFF(";
 
-   res += Name + string( ", " );
-   res += FClassName + string( ", " );
-   res += NetIndexedGetter + string( ", " );
-   res += NetIndexedSetter + string( ")" );
+	res += Name + string( ", " );
+	res += FClassName + string( ", " );
+	res += NetIndexedGetter + string( ", " );
+	res += NetIndexedSetter + string( ")" );
 
-   return res;
+	return res;
 }
 
 string clProperty::DeclareNETProperty() const
@@ -482,96 +482,96 @@ string clProperty::DeclareNETProperty_Impl() const
 
 string clProperty::GetScriptDeclaration() const
 {
-   string res = string( "// property " );
+	string res = string( "// property " );
 
-   res += Name;
+	res += Name;
 
-   if ( FieldName.empty() )
-   {
-      if ( !Getter.empty() )
-      {
-         res += string( " get(" ) + Getter + string( ")" );
-      }
+	if ( FieldName.empty() )
+	{
+		if ( !Getter.empty() )
+		{
+			res += string( " get(" ) + Getter + string( ")" );
+		}
 
-      if ( !Setter.empty() )
-      {
-         res += string( " set(" ) + Setter + string( ")" );
-      }
-   }
-   else
-   {
-      res += string( " get() set()" );
-   }
+		if ( !Setter.empty() )
+		{
+			res += string( " set(" ) + Setter + string( ")" );
+		}
+	}
+	else
+	{
+		res += string( " get() set()" );
+	}
 
-   res += string( ";" );
+	res += string( ";" );
 
-   res += string( " // " );
+	res += string( " // " );
 
-   if ( !Validator.empty() )
-   {
-      res += string( "Validator = " ) + Validator;
-   }
-   else
-   {
-      res += string( "No validator" );
-   }
+	if ( !Validator.empty() )
+	{
+		res += string( "Validator = " ) + Validator;
+	}
+	else
+	{
+		res += string( "No validator" );
+	}
 
-   return res;
+	return res;
 }
 
 /////// New serialization scheme
 bool clProperty::Saveable() const
 {
-   if ( !IndexType.empty() )
-   {
-      if ( IndexType == "int" ) { return true; }
+	if ( !IndexType.empty() )
+	{
+		if ( IndexType == "int" ) { return true; }
 		if ( IndexType == "size_t" ) { return true; }
-   }
+	}
 
-   if ( !FieldName.empty() ) { return true; }
+	if ( !FieldName.empty() ) { return true; }
 
-   if ( !Setter.empty() ) { return true; }
+	if ( !Setter.empty() ) { return true; }
 
-   return false;
+	return false;
 }
 
 bool clProperty::Loadable() const
 {
-   if ( !IndexType.empty() )
-   {
-      if ( IndexType == "int" ) { return true; }
-      if ( IndexType == "size_t" ) { return true; }
-   }
+	if ( !IndexType.empty() )
+	{
+		if ( IndexType == "int" ) { return true; }
+		if ( IndexType == "size_t" ) { return true; }
+	}
 
-   if ( !FieldName.empty() ) { return true; }
+	if ( !FieldName.empty() ) { return true; }
 
-   if ( !Getter.empty() ) { return true; }
+	if ( !Getter.empty() ) { return true; }
 
-   return false;
+	return false;
 }
 
 string clProperty::GetFromStringConverter() const
 {
-   string Conv = FromStringConverter;
+	string Conv = FromStringConverter;
 
-   if ( FromStringConverter.empty() )
-   {
-      Conv = FDatabase->GetAppropriateFromStringConverter( Type );
-   }
+	if ( FromStringConverter.empty() )
+	{
+		Conv = FDatabase->GetAppropriateFromStringConverter( Type );
+	}
 
-   return Conv;
+	return Conv;
 }
 
 string clProperty::GetToStringConverter() const
 {
-   string Conv = ToStringConverter;
+	string Conv = ToStringConverter;
 
-   if ( ToStringConverter.empty() )
-   {
-      Conv = FDatabase->GetAppropriateToStringConverter( Type );
-   }
+	if ( ToStringConverter.empty() )
+	{
+		Conv = FDatabase->GetAppropriateToStringConverter( Type );
+	}
 
-   return Conv;
+	return Conv;
 }
 
 string CompressSerializedName( const string& InName )
@@ -607,187 +607,188 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 #define FIX_TRAILING_COMMA() \
 	if ( res[res.length() - 2] != ',') res += string(", ");
 
-   string res = "";
+	string res = "";
 
-   // <MacroName> ( PropertyName, FieldName, ClassName, AccessName or Getter/Setter, Type for arrays, ToStringConverter )
+	// <MacroName> ( PropertyName, FieldName, ClassName, AccessName or Getter/Setter, Type for arrays, ToStringConverter )
 
-   res  = string( ( IsScalar ? "SCALAR" : "OBJECT" ) );
-   res += string( ( IsArray ? "_ARRAY" : "" ) );
+	res  = string( ( IsScalar ? "SCALAR" : "OBJECT" ) );
+	res += string( ( IsArray ? "_ARRAY" : "" ) );
 
-   res += string( "_PROPERTY_" );
+	res += string( "_PROPERTY_" );
 
-   if(Accessor)
-   {
-      res += string( Load ? "SET" : "GET" );
-   } else
-   {
-      res += string( Load ? "LOAD" : "SAVE" );
-   }
+	if(Accessor)
+	{
+		res += string( Load ? "SET" : "GET" );
+	} else
+	{
+		res += string( Load ? "LOAD" : "SAVE" );
+	}
 
-   res += string( "__" );
+	res += string( "__" );
 
-   bool EmptyFlag = Load ? Setter.empty() : Getter.empty();
+	bool EmptyFlag = Load ? Setter.empty() : Getter.empty();
 	bool NeedType = false;
 
-   if ( !EmptyFlag )
-   {
-      res += string( Load ? "SETTER" : "GETTER" );
-   }
-   else
-   {
-      // compressed name is used for the loader function name
-      res += string( "FIELD" );
-   }
-
-   if(SmartPointer && Accessor && !Load && !IsArray & !IsScalar)
-   {
-      /// Accessor/Getter must decypher smart pointers
-      res += string( "_SMARTPTR");
-   }
+	if ( !EmptyFlag )
+	{
+		res += string( Load ? "SETTER" : "GETTER" );
+	}
 	else
-   if(SmartPointer && !Accessor && Load && EmptyFlag)
-   {
-      /// Field loader must decypher smart pointers
-      res += string( "_SMARTPTR");
+	{
+		// compressed name is used for the loader function name
+		res += string( "FIELD" );
+	}
+
+	if(SmartPointer && Accessor && !Load && !IsArray & !IsScalar)
+	{
+		/// Accessor/Getter must decypher smart pointers
+		res += string( "_SMARTPTR");
+	}
+	else
+	if(SmartPointer && !Accessor && Load && EmptyFlag)
+	{
+		/// Field loader must decypher smart pointers
+		res += string( "_SMARTPTR");
 		NeedType = true;
-   }
+	}
 
-   res += string("(");
+	res += string("(");
 
-   string MacroName = res;
+	string MacroName = res;
 
-   res += Name + string(", ");
+	res += Name + string(", ");
 
-   res += (FieldName.empty() ? string("\"\"") : FieldName) + string( ", " );
+	res += (FieldName.empty() ? string("\"\"") : FieldName) + string( ", " );
 
-   res += FClassName;
+	res += FClassName;
 
-   if ( !EmptyFlag)
-   {
-      FIX_TRAILING_COMMA()
-      res += ( Load ? Setter : Getter );
-   }
-   else
-   {
-      // arrays do not yet support indirect referencing !
-      if ( !IsArray )
-      {
-         FIX_TRAILING_COMMA();
-         res += CompressSerializedName( FieldName );
-      }
-   }
+	if ( !EmptyFlag)
+	{
+		FIX_TRAILING_COMMA()
+		res += ( Load ? Setter : Getter );
+	}
+	else
+	{
+		// arrays do not yet support indirect referencing !
+		if ( !IsArray )
+		{
+			FIX_TRAILING_COMMA();
+			res += CompressSerializedName( FieldName );
+		}
+	}
 
-   if ( IsArray )
-   {
-      if ( !IsScalar )
-      {
-         if ( Load )
-         {
-            FIX_TRAILING_COMMA()
-            res += Type;
-         }
-      }
-   }
+	if ( IsArray )
+	{
+		if ( !IsScalar )
+		{
+			if ( Load )
+			{
+				FIX_TRAILING_COMMA()
+				res += Type;
+			}
+		}
+	}
 
-   if ( IsScalar )
-   {
-      string Conv = Load ? GetFromStringConverter() : GetToStringConverter();
+	if ( IsScalar )
+	{
+		string Conv = Load ? GetFromStringConverter() : GetToStringConverter();
 
-      if ( Conv.empty() ) { Conv = "EMPTY_CONVERTER"; }
+		if ( Conv.empty() ) { Conv = "EMPTY_CONVERTER"; }
 
-      FIX_TRAILING_COMMA()
-	  res += Conv;
-   }
+		FIX_TRAILING_COMMA()
+		res += Conv;
+	}
 
 	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor) || NeedType )
 	{
 		res += ", " + Type;
 	}
 
-   res += string( ")\n" );
+	res += string( ")\n" );
 
-   return res; //FDatabase->ExpandMacro(res);
+	return res; //FDatabase->ExpandMacro(res);
 }
 
 string clProperty::GetLoadSaveDeclarations() const
 {
-   bool isArray = ( IndexType == "int" ) || ( IndexType == "size_t" );
+	bool isArray = ( IndexType == "int" ) || ( IndexType == "size_t" );
 
-   if ( !IndexType.empty() ) { if ( !isArray ) { return ""; } } // only 'int' is supported
+	if ( !IndexType.empty() ) { if ( !isArray ) { return ""; } } // only 'int' is supported
 
-   bool isScalar = !FDatabase->IsWrappedClass( Type ); //!IsClassType(Type);
+	bool isScalar = !FDatabase->IsWrappedClass( Type ); //!IsClassType(Type);
 
-   string res;
+	string res;
 
-   // Get/Set property has a different binding code implementation
-   // loader/saver for a scalar/pod/object field
+	// Get/Set property has a different binding code implementation
+	// loader/saver for a scalar/pod/object field
 
-   // Text loader/saver
-   // Loader
-   res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
-   // Saver
-   res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
+	// Text loader/saver
+	// Loader
+	res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
+	// Saver
+	res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
 
-   // Binary loader/saver
-   // Loader
-   res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
-   // Saver
-   res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
+	// Binary loader/saver
+	// Loader
+	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
+	// Saver
+	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
 
-   if(!isArray)
-   {
-	   // TODO: support scalars and strings
-	   if(!isScalar)
-	   {
-          // Get-accessor
-          res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() ) );
-          // Set-accessor
-          res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() ) );
-	   } else
-	   {
-	   }
-   }
-   else
-   {
-//    Items, SerializableClass)
-      res += "\n";
-      string res1 = string( "ARRAY_PROPERTY_FUNCTIONS__FIELD(" );
-      res1 += FieldName;
-      res1 += string( ", " ) + FClassName;
-      res1 += string( ")" );
+	if(!isArray)
+	{
+		// TODO: support scalars and strings
+		if(!isScalar)
+		{
+			// Get-accessor
 
-      res += FDatabase->ExpandMacro( res1 );
+			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() ) );
+			// Set-accessor
+			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() ) );
+		} else
+		{
+		}
+	}
+	else
+	{
+		//    Items, SerializableClass)
+		res += "\n";
 
-      if ( !isScalar )
-      {
-         res += string( "\n" );
+		string res1 = string( "ARRAY_PROPERTY_FUNCTIONS__FIELD(" );
+		res1 += FieldName;
+		res1 += string( ", " ) + FClassName;
+		res1 += string( ")" );
+
+		res += FDatabase->ExpandMacro( res1 );
+
+		if ( !isScalar )
+		{
+			res += string( "\n" );
          
-		 string res2 = string( "ARRAY_PROPERTY_DELETE_FUNCTION__FIELD(" );
-         res2 += FieldName;
-         res2 += string( ", " ) + FClassName;
-         res2 += string( ")" );
+			string res2 = string( "ARRAY_PROPERTY_DELETE_FUNCTION__FIELD(" );
+			res2 += FieldName;
+			res2 += string( ", " ) + FClassName;
+			res2 += string( ")" );
 
-		 res += FDatabase->ExpandMacro( res2 );
+			res += FDatabase->ExpandMacro( res2 );
 
-         res += string( "\n" );
+			res += string( "\n" );
 
-	/// array getter
-	res2 = string("ARRAY_PROPERTY_GETOBJECT_FUNCTION__FIELD(");
-	res2 += FieldName;
-	res2 += string( ", ") + FClassName;
-	res2 += string( ")" );
+			/// array getter
+			res2 = string("ARRAY_PROPERTY_GETOBJECT_FUNCTION__FIELD(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ")" );
 
-		 res += FDatabase->ExpandMacro( res2 );
+			res += FDatabase->ExpandMacro( res2 );
+		}
 
-      }
+		res += string( "\n" );
+	}
 
-      res += string( "\n" );
-   }
+	// TODO : handle non-resizable array and Getter/Setter arrays
+	// if (isArray && Setter.)
 
-   // TODO : handle non-resizable array and Getter/Setter arrays
-// if (isArray && Setter.)
-
-   return res;
+	return res;
 }
 
 string clProperty::GetRegistrationCode() const
@@ -869,18 +870,18 @@ string clProperty::GetRegistrationCode() const
 
 string clProperty::Validate()
 {
-   if ( Type.empty() ) { return "Property type is not specified. Check definition syntax"; }
+	if ( Type.empty() ) { return "Property type is not specified. Check definition syntax"; }
 
-   if ( Name.empty() ) { return "Property name is not specified. Check definition syntax"; }
+	if ( Name.empty() ) { return "Property name is not specified. Check definition syntax"; }
 
-   if ( FieldName.empty() )
-   {
-      if ( Getter.empty() && Setter.empty() )
-      {
-         // it is not an array property ?
-         return "No field, getter or setter";
-      }
-   }
+	if ( FieldName.empty() )
+	{
+		if ( Getter.empty() && Setter.empty() )
+		{
+			// it is not an array property ?
+			return "No field, getter or setter";
+		}
+	}
 
-   return "";
+	return "";
 }
