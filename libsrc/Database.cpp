@@ -584,7 +584,7 @@ string clDatabase::ExtractSmartPointerType( const string& TypeName )
 {
 	if ( IsSmartPointer( TypeName ) )
 	{
-		return TypeName.substr( 6, TypeName.size() - 7 );
+		return TrimSpaces( TypeName.substr( 6, TypeName.size() - 7 ) );
 	}
 	
 	return TypeName;

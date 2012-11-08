@@ -149,7 +149,7 @@ string clProperty::FromString( const string& P )
 	if ( SmartPointer )
 	{
 		// drop the last ^ from the type name
-		Type = Type.substr( 0, Type.length() - 1 );
+		Type = TrimSpaces( Type.substr( 0, Type.length() - 1 ) );
 
 		if ( Verbose ) cout << "Smartpointer property: " << Name << " " << Type << endl;
 	}
