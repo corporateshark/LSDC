@@ -639,7 +639,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 		res += string( "FIELD" );
 	}
 
-	if(SmartPointer && Accessor && !Load && !IsArray & !IsScalar)
+	if(SmartPointer && ( (Accessor && !Load && !IsArray) || (!Accessor && Load && IsArray) ) && !IsScalar)
 	{
 		/// Accessor/Getter must decypher smart pointers
 		res += string( "_SMARTPTR");
@@ -764,7 +764,9 @@ string clProperty::GetLoadSaveDeclarations() const
 		{
 			res += string( "\n" );
          
-			string res2 = string( "ARRAY_PROPERTY_DELETE_FUNCTION__FIELD(" );
+			string res2 = string( "ARRAY_PROPERTY_DELETE_FUNCTION__FIELD" );
+			if(SmartPointer) { res2 += string("_SMARTPTR"); }
+			res2 += string("(");
 			res2 += FieldName;
 			res2 += string( ", " ) + FClassName;
 			res2 += string( ")" );
@@ -774,7 +776,9 @@ string clProperty::GetLoadSaveDeclarations() const
 			res += string( "\n" );
 
 			/// array getter
-			res2 = string("ARRAY_PROPERTY_GETOBJECT_FUNCTION__FIELD(");
+			res2 = string("ARRAY_PROPERTY_GETOBJECT_FUNCTION__FIELD");
+			if(SmartPointer) { res2 += string("_SMARTPTR"); }
+			res2 += string("(");
 			res2 += FieldName;
 			res2 += string( ", ") + FClassName;
 			res2 += string( ")" );
@@ -817,7 +821,11 @@ string clProperty::GetRegistrationCode() const
    {
       if ( Setter.empty() && Getter.empty() )
       {
-         string CommonPart = ObjPrefix + string( "FIELD(" ) + CompressSerializedName( FieldName );
+         string CommonPart = ObjPrefix + string( "FIELD");
+
+//         if(SmartPointer) { CommonPart += string("_SMARTPTR"); }
+
+         CommonPart += string("(" ) + CompressSerializedName( FieldName );
 
          res += CommonPart;
 
