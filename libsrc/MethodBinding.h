@@ -472,7 +472,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
 	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
 	Out << ">" << endl;
-	Out << "inline iAsyncCapsule* BindCapsule( ";
+	Out << "inline clPtr<iAsyncCapsule> BindCapsule( ";
 	if ( Static )
 	{
 		Out << "ReturnType ( *FuncPtr )(";
