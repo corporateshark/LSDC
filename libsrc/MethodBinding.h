@@ -315,7 +315,7 @@ void GenerateMethodBinders( std::ostream& Out, int NumParams )
    Out << endl;
 }
 
-void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Const, bool Volatile )
+void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Const, bool Volatile, bool SmartPtr )
 {
    Out << endl;
    Out << endl;
@@ -335,7 +335,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
 	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
 	Out << ">" << endl;
-   Out << "class clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << " : public iAsyncCapsule" << endl;
+   Out << "class clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << ( ( SmartPtr ) ? "_SmartPtr" : "" ) << " : public iAsyncCapsule" << endl;
    Out << "{" << endl;
 
 	// generate typedefs
@@ -362,19 +362,26 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 		Out << ";" << endl;
 
 		Out << "	MethodPtr    FMethodPtr;" << endl;
-		Out << "	T*           FObjectAddr;"  << endl;
+		if ( SmartPtr )
+		{
+			Out << "	clPtr<T>     FObjectAddr;"  << endl;
+		}
+		else
+		{
+			Out << "	T*           FObjectAddr;"  << endl;
+		}
 	}
 
 	// generate parameters' containers
 	for ( int i = 0; i != ParamsCount; i++ )
 	{
-		Out << "	P" << i << " FP" << i << ";" << endl;
+		Out << "\ttypename TypeTraits< typename TypeTraits<P" << i << ">::ReferredType >::UnqualifiedType FP" << i << ";" << endl;
 	}
 
    Out << "public:" << endl;
 
 	// generate constructor
-	Out << "	explicit clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
+	Out << "	explicit clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << ( ( SmartPtr ) ? "_SmartPtr" : "" );
 	Out << "(";
 	if ( Static )
 	{
@@ -382,7 +389,14 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	}
 	else
 	{
-		Out << " MethodPtr Ptr, T* ObjectAddr";
+		if ( SmartPtr )
+		{
+			Out << " MethodPtr Ptr, const clPtr<T>& ObjectAddr";
+		}
+		else
+		{
+			Out << " MethodPtr Ptr, T* ObjectAddr";
+		}
 	}
 	for ( int i = 0; i != ParamsCount; i++ )
 	{
@@ -404,7 +418,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << " {}" << endl;
 
 	// parameter setters
-	if(ParamsCount > 0)
+	if (ParamsCount > 0)
 	{
 		Out << endl;
 
@@ -412,8 +426,8 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 
 		for(int i = 0 ; i < ParamsCount ; i++)
 		{
-			Out << "\t\tif(Index == " << i << ")" << endl << "\t\t{" << endl;
-			Out << "\t\t\tFP" << i << " = *(typename TypeTraits<P" << i << ">::ReferredType*)( TheParam->GetNativeBlock() );" << endl;
+			Out << "\t\tif ( Index == " << i << " )" << endl << "\t\t{" << endl;
+			Out << "\t\t\tFP" << i << " = *(typename TypeTraits< typename TypeTraits<P" << i << ">::ReferredType >::UnqualifiedType*)( TheParam->GetNativeBlock() );" << endl;
 			Out << "\t\t\treturn true;" << endl;
 			Out << "\t\t}" << endl << endl;
 		}
@@ -433,7 +447,14 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	}
 	else
 	{
-		Out << "FObjectAddr->*FMethodPtr";
+		if ( SmartPtr )
+		{
+			Out << "FObjectAddr.GetInternalPtr()->*FMethodPtr";
+		}
+		else
+		{
+			Out << "FObjectAddr->*FMethodPtr";
+		}
 	}
 
 	Out << " )( ";
@@ -471,7 +492,14 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 		if ( Const ) Out << " const";
 		if ( Volatile ) Out << " volatile";
 
-		Out << ", T* ObjectAddr";
+		if ( SmartPtr )
+		{
+			Out << ", const clPtr<T>& ObjectAddr";
+		}
+		else
+		{
+			Out << ", T* ObjectAddr";
+		}
 	}
 	for ( int i = 0; i != ParamsCount; i++ )
 	{
@@ -483,7 +511,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << "{" << endl;
 	Out << "	return new ";
 //	clCapsuleParams0_Method_Const<T, ReturnType>( MethodPtr, ObjectAddr );
-	Out << "clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
+	Out << "clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << ( ( SmartPtr ) ? "_SmartPtr" : "" );
 	Out << "<";
 	if ( !Static ) Out << "T, ";
    Out << "ReturnType";
@@ -540,19 +568,31 @@ void GenerateCapsules( std::ostream& Out, int NumParams )
    for ( int i = 0; i < NumParams + 1 ; i++ )
    {
       // static
-      GenerateCapsule( Out, true, i, false, false );
+      GenerateCapsule( Out, true, i, false, false, false );
 
 		// non-const non-volatile
-		GenerateCapsule( Out, false, i, false, false );
+		GenerateCapsule( Out, false, i, false, false, false );
 
 		// const non-volatile
-		GenerateCapsule( Out, false, i, true, false );
+		GenerateCapsule( Out, false, i, true, false, false );
 
 		// non-const volatile
-		GenerateCapsule( Out, false, i, false, true );
+		GenerateCapsule( Out, false, i, false, true, false );
 
 		// const volatile
-		GenerateCapsule( Out, false, i, true, true );
+		GenerateCapsule( Out, false, i, true, true, false );
+
+		// non-const non-volatile smartptr
+		GenerateCapsule( Out, false, i, false, false, true );
+
+		// const non-volatile smartptr
+		GenerateCapsule( Out, false, i, true, false, true );
+
+		// non-const volatile smartptr
+		GenerateCapsule( Out, false, i, false, true, true );
+
+		// const volatile smartptr
+		GenerateCapsule( Out, false, i, true, true, true );
    }
 
 
