@@ -902,7 +902,7 @@ bool    clClass::GenerateEngineExports( buffered_stream& Stub, bool Tunneller ) 
 	if ( Tunneller ) Stub << "#if !defined(_DISABLE_TUNNELLERS_)" << endl;
    Stub << "   iStaticClass* StaticClass = new clNative" << ( Abstract ? "Abstract" : "" ) << "StaticClass";
 	if ( !HasDefaultConstructor() ) Stub << FConstructors[0].FArgTypes.size();
-	Stub << "<" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << ConstructorParams << ">;" << endl;
+	Stub << "<" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << ConstructorParams << " >;" << endl;
    Stub << endl;
    Stub << "   StaticClass->Env = Env;" << endl;
    Stub << endl;
