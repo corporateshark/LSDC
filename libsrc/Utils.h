@@ -4,9 +4,9 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.9.54
- * \date 02/12/2012
- * \author Sergey Kosarevsky, 2005-2012
+ * \version 0.9.55
+ * \date 08/03/2013
+ * \author Sergey Kosarevsky, 2005-2013
  * \author Viktor Latypov, 2007-2011
  * \author support@linderdaum.com http://www.linderdaum.com
  */
@@ -40,9 +40,9 @@ extern bool Verbose;
 
 const char TAB_CHAR = 0x9;
 
-const string EngineVersion = "0.6.20";
-const string LSDCVersion = "0.9.54";
-const string LSDCDate = "02/12/2012";
+const string EngineVersion = "0.6.26";
+const string LSDCVersion = "0.9.55";
+const string LSDCDate = "08/03/2013";
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 
 typedef vector<string>    clStringsList;
@@ -110,6 +110,31 @@ void ExcludeFiles( const vector<string>& Names );
 bool IsFileExcluded( const string& Name );
 string GetCurrentDate();
 string GetCurrentVersion();
+
+bool IsDigit( const char Ch )
+{
+	return ( ( Ch >= '0' ) && ( Ch <= '9' ) );
+}
+
+bool IsAlpha( char Ch )
+{
+	return ( ( Ch >= 'a' ) && ( Ch <= 'z' ) ) || ( ( Ch >= 'A' ) && ( Ch <= 'Z' ) );
+}
+
+bool IsAlphanumeric( char Ch )
+{
+	return IsDigit( Ch ) || IsAlpha( Ch );
+}
+
+bool IsStrAlphanumeric( const string& S )
+{
+	for ( size_t i = 0; i != S.length(); i++ )
+	{
+		if ( !IsAlphanumeric( S[i] ) ) return false;
+	}
+
+	return true;
+}
 
 #endif
 

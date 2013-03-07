@@ -113,10 +113,42 @@ string clProperty::FromString( const string& P )
    size_t Pos1 = P.find_first_of( '(' );
    size_t Pos2 = P.find_last_of( ')' );
 
+   if ( Pos1 == std::string::npos ) { return string( "Expected ( in property description" ); }
+   if ( Pos2 == std::string::npos ) { return string( "Expected ) in property description" ); }
+
    string ParamList = TrimSpaces( P.substr( Pos1 + 1, Pos2 - Pos1 - 1 ) );
 
    if ( ParamList.empty() ) { return string( "Incomplete property description" ); }
 
+	vector<string> Params;
+	{
+		string CurrentToken;
+		bool InQuotes = false;
+
+		for ( size_t i = 0; i != ParamList.size(); i++ )
+		{
+			if ( ParamList[i] =='"' )
+			{
+				InQuotes = !InQuotes;
+			}
+			else if ( ParamList[i] == ',' )
+			{
+//				std::cout << CurrentToken << std::endl;
+				Params.push_back( CurrentToken );
+				CurrentToken.clear();
+			}
+			else
+			{
+				if ( ( ( ParamList[i] == ' ' ) || ( ParamList[i] == '\t' ) ) && !InQuotes ) continue;
+
+				CurrentToken += ParamList[i];
+			}
+		}
+
+		if ( !CurrentToken.empty() ) Params.push_back( CurrentToken );
+	}
+
+/*
    // 2. split it using ',' as the delimiter
    vector<string> Params;
    string Remainder = ParamList;
@@ -132,16 +164,28 @@ string clProperty::FromString( const string& P )
    }
 
 // SplitLine(ParamList, Params, ',');
-
+*/
    // 3. split each parameter to <ParamName, ParamValue>
    for ( size_t i = 0 ; i < Params.size() ; i++ )
    {
-      string PP = Params[i];
+      string& PP = Params[i];
+
+	   if ( PP.find_first_of( '=' ) == std::string::npos ) return string( "Expected = in property description: " + PP );
 
       string _Name = TrimSpaces( BeforeChar( PP, "=" ) );
       string _Val  = TrimSpaces( AfterChar( PP, "=" ) );
 
-      if ( _Name == "Name" ) { _Val = TrimQuotes( _Val ); }
+		if ( !IsStrAlphanumeric( _Name ) )
+		{
+			return string( "Property param name should be alphanumeric: " + PP );
+		}
+
+		if ( _Name != "Name" && !IsStrAlphanumeric( _Name ) )
+		{
+			return string( "Property param value should be alphanumeric: " + PP );
+		}
+
+//      if ( _Name == "Name" ) { _Val = TrimQuotes( _Val ); }
 
       SetParam( _Name, _Val );
    }
