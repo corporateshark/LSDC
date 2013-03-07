@@ -111,22 +111,22 @@ bool IsFileExcluded( const string& Name );
 string GetCurrentDate();
 string GetCurrentVersion();
 
-bool IsDigit( const char Ch )
+inline bool IsDigit( const char Ch )
 {
 	return ( ( Ch >= '0' ) && ( Ch <= '9' ) );
 }
 
-bool IsAlpha( char Ch )
+inline bool IsAlpha( char Ch )
 {
 	return ( ( Ch >= 'a' ) && ( Ch <= 'z' ) ) || ( ( Ch >= 'A' ) && ( Ch <= 'Z' ) );
 }
 
-bool IsAlphanumeric( char Ch )
+inline bool IsAlphanumeric( char Ch )
 {
 	return IsDigit( Ch ) || IsAlpha( Ch );
 }
 
-bool IsStrAlphanumeric( const string& S )
+inline bool IsStrAlphanumeric( const string& S )
 {
 	for ( size_t i = 0; i != S.length(); i++ )
 	{
