@@ -6,4 +6,4 @@ out/%.o: src/%.cpp
 	$(CC) -o $@ -c $^ $(CXXFLAGS)
 
 lsdctest: $(OBJS)
-	$(CC) -m32 -o lsdctest.exe $(OBJS) out/liblsdc.a -lstdc++ 
+	$(CC) -o lsdctest.exe $(OBJS) out/liblsdc.a -lstdc++ 
