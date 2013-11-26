@@ -74,6 +74,8 @@ void clMethod::GenerateMethodStub( const clClass* OriginalClass, buffered_stream
 
    Out << "         if ( !MethodCalled ) ";
 
+	bool ShouldReturn = false;
+
    if ( MethodOverriden )
    {
       if ( FReturnType != "void" ) { Out << "return "; }
@@ -92,18 +94,22 @@ void clMethod::GenerateMethodStub( const clClass* OriginalClass, buffered_stream
    else
    {
       Out << "FATAL_MSG(\"Abstract method called: " << FClassName << "::" << FMethodName << "()" << "\")" << endl;
+		ShouldReturn = true;
    }
 
-   if ( FReturnType != "void" )
-   {
-      Out << endl;
-      Out << "         return *(TypeTraits< " << FReturnType << " >::ReferredType*)iObject::GetReturnValue()->GetNativeBlock();" << endl;
-   }
-   else
-   {
-      Out << endl;
-      Out << "         return;" << endl;
-   }
+	if ( ShouldReturn )
+	{
+	   if ( FReturnType != "void" )
+	   {
+	      Out << endl;
+	      Out << "         return *(TypeTraits< " << FReturnType << " >::ReferredType*)iObject::GetReturnValue()->GetNativeBlock();" << endl;
+	   }
+	   else
+	   {
+	      Out << endl;
+	      Out << "         return;" << endl;
+	   }
+	}
 
    Out << "      }" << endl;
 
@@ -132,12 +138,13 @@ void clMethod::GenerateMethodStub( const clClass* OriginalClass, buffered_stream
    {
       Out << endl;
       Out << "      FATAL_MSG(\"Abstract method called: " << FClassName << "::" << FMethodName << "()" << "\")" << endl;
-
+/*
       if ( FReturnType != "void" )
       {
          Out << endl;
          Out << "      return *(TypeTraits< " << FReturnType << " >::ReferredType*)(0);" << endl;
       }
+*/
    }
 
    Out << "   }" << endl;
