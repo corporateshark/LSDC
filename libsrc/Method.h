@@ -44,6 +44,7 @@ struct clMethod
    bool             FAbstract;
    bool             FVirtual;
    bool             FStatic;
+	bool             FVolatile;
    string           FAccess;
 #pragma endregion
 
@@ -71,7 +72,7 @@ struct clMethod
    // new argument containers, unused
    vector<clMethodArg> FArgs;
 
-   clMethod() : FArgs(), FStatic( false ), FExportedToNET( false ) {}
+   clMethod() : FArgs(), FStatic( false ), FConst( false ), FVolatile( false ), FVirtual( false ), FExportedToNET( false ) {}
 
    /// Parse C++ method definition
    void FromString( const string& Line );

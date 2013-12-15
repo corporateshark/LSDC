@@ -36,82 +36,100 @@ void clMethod::GenerateMethodStub( const clClass* OriginalClass, buffered_stream
       Out << ( ( i + 1 != FArgTypes.size() ) ? ", " : "" );
    }
 
-   Out << ")" << ( FConst ? " const" : "" ) << endl;
+   Out << ")" << ( FConst ? " const" : "" );
+
+   Out << ( FVolatile ? " volatile" : "" );
+
+	// C++ 11 stuff
+	if ( FVirtual )
+	{
+	   Out << " override";
+	}
+   Out << endl;
 
    // generate method body
    Out << "   {" << endl;
 
-   Out << "      if ( !iObject::FInheritedCall && iObject::IsMethodOverriden( \"" << FMethodName << "\" ) )" << endl;
-   Out << "      {" << endl;
+	bool ShouldReturn = true;
 
-   Out << "         clParametersList Params;" << endl;
-   Out << endl;
-
-   for ( size_t i = 0; i != FArgTypes.size(); ++i )
-   {
-      Out << "         ParameterType<" << FArgTypes[i] << " >::Type Param" << static_cast<int>( i ) << ";" << endl;
-
-      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
-   }
-
-   for ( size_t i = 0; i != FArgTypes.size(); ++i )
-   {
-      Out << "         Param" << static_cast<int>( i ) << ".ReadValue( &P" << static_cast<int>( i ) << " );" << endl;
-
-      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
-   }
-
-   for ( size_t i = 0; i != FArgTypes.size(); ++i )
-   {
-      Out << "         Params.push_back( &Param" << static_cast<int>( i ) << " );" << endl;
-
-      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
-   }
-
-   Out << "         bool MethodCalled = iObject::CallMethod( \"" << FMethodName << "\", Params, iObject::FInheritedCall );" << endl;
-
-   Out << endl;
-
-   Out << "         if ( !MethodCalled ) ";
-
-	bool ShouldReturn = false;
-
-   if ( MethodOverriden )
-   {
-      if ( FReturnType != "void" ) { Out << "return "; }
-
-      Out << OverridenInClass << "::" << FMethodName << "(";
-
-      for ( size_t i = 0; i != FArgTypes.size(); ++i )
-      {
-         Out << "P" << static_cast<int>( i );
-
-         if ( i != FArgTypes.size() - 1 ) { Out << ", "; }
-      }
-
-      Out << ");" << endl;
-   }
-   else
-   {
-      Out << "FATAL_MSG(\"Abstract method called: " << FClassName << "::" << FMethodName << "()" << "\")" << endl;
-		ShouldReturn = true;
-   }
-
-	if ( ShouldReturn )
+	if ( !FVolatile )
 	{
-	   if ( FReturnType != "void" )
+		ShouldReturn = false;
+
+	   Out << "      if ( !iObject::FInheritedCall && iObject::IsMethodOverriden( \"" << FMethodName << "\" ) )" << endl;
+	   Out << "      {" << endl;
+
+	   Out << "         clParametersList Params;" << endl;
+	   Out << endl;
+
+	   for ( size_t i = 0; i != FArgTypes.size(); ++i )
 	   {
-	      Out << endl;
-	      Out << "         return *(TypeTraits< " << FReturnType << " >::ReferredType*)iObject::GetReturnValue()->GetNativeBlock();" << endl;
+	      Out << "         ParameterType<" << FArgTypes[i] << " >::Type Param" << static_cast<int>( i ) << ";" << endl;
+
+	      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
+	   }
+
+	   for ( size_t i = 0; i != FArgTypes.size(); ++i )
+	   {
+	      Out << "         Param" << static_cast<int>( i ) << ".ReadValue( &P" << static_cast<int>( i ) << " );" << endl;
+
+	      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
+	   }
+
+	   for ( size_t i = 0; i != FArgTypes.size(); ++i )
+	   {
+	      Out << "         Params.push_back( &Param" << static_cast<int>( i ) << " );" << endl;
+
+	      if ( i == FArgTypes.size() - 1 ) { Out << endl; }
+	   }
+
+	   Out << "         bool MethodCalled = iObject::CallMethod( \"" << FMethodName << "\", Params, iObject::FInheritedCall );" << endl;
+
+	   Out << endl;
+
+	   Out << "         if ( !MethodCalled ) ";
+
+	   if ( MethodOverriden )
+	   {
+	      if ( FReturnType != "void" ) { Out << "return "; }
+
+	      Out << OverridenInClass << "::" << FMethodName << "(";
+
+	      for ( size_t i = 0; i != FArgTypes.size(); ++i )
+	      {
+	         Out << "P" << static_cast<int>( i );
+
+	         if ( i != FArgTypes.size() - 1 ) { Out << ", "; }
+	      }
+
+	      Out << ");" << endl;
 	   }
 	   else
 	   {
-	      Out << endl;
-	      Out << "         return;" << endl;
+	      Out << "FATAL_MSG(\"Abstract method called: " << FClassName << "::" << FMethodName << "()" << "\")" << endl;
+			ShouldReturn = true;
 	   }
-	}
 
-   Out << "      }" << endl;
+		if ( ShouldReturn )
+		{
+		   if ( FReturnType != "void" )
+		   {
+		      Out << endl;
+		      Out << "         return *(TypeTraits< " << FReturnType << " >::ReferredType*)iObject::GetReturnValue()->GetNativeBlock();" << endl;
+		   }
+		   else
+		   {
+		      Out << endl;
+		      Out << "         return;" << endl;
+		   }
+		}
+
+	   Out << "      }" << endl;
+	}
+	else
+	{
+		Out << "      // Volatile methods cannot be overridden in script" << endl;
+	}
 
 //   Out << endl;
 //   Out << "      iObject::ResetInheritedCall();" << endl;
@@ -205,6 +223,7 @@ void clMethod::FromString( const string& Line )
 
       FConst = ( Modifier.find( "const" ) != -1 );
       FAbstract = ( Modifier.find( "=" ) != -1 && Modifier.find( "0" ) != -1 );
+		FVolatile = ( Modifier.find( "volatile" ) != -1 );
    }
 
    // extract method name
