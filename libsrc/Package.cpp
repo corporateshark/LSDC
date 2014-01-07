@@ -106,8 +106,6 @@ void clPackage::GenerateStuff()
 
    if ( FGenerateNETExport ) { GenerateDotNETWrappers(); }
 
-   if ( FGenerateSerialization ) { GenerateSerializationCode(); }
-
    if ( FGenerateScriptExports ) { GenerateScriptExport(); }
 
    if ( FGenerateEnums ) { GenerateEnums(); }
@@ -179,33 +177,6 @@ void clPackage::GenerateEnumConverters( const string& FileNameBase )
          FEnums[i].GenerateToStringConverter( Out );
          Out << endl;
          FEnums[i].GenerateFromStringConverter( Out );
-         Out << endl;
-      }
-   }
-}
-
-void clPackage::GenerateSerializationCode()
-{
-   string Dir = FPackageOutDirectory + string( "/" ) + SerializationDirName + string( "/" );
-   string SerializationFile = Dir + string( "Serialization_" ) + FPackageName + string( ".cpp" );
-
-   buffered_stream Out( SerializationFile.c_str() );
-
-   Out.Include( FPackageCustomIncludeName );
-   Out << endl;
-
-   for ( map<string, clClass>::iterator i = FClasses.begin() ; i != FClasses.end() ; i++ )
-   {
-      clClass& Class = i->second;
-
-      if ( Class.FSerializable )
-      {
-         Out.Include( Class.FDeclaredIn );
-         Out << endl;
-
-         Class.GenerateStdLoadCode( Out );
-         Out << endl;
-         Class.GenerateStdSaveCode( Out );
          Out << endl;
       }
    }

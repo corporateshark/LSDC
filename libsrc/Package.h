@@ -186,9 +186,6 @@ private:
    /// .NET C++/CLI binding code
    void GenerateDotNETWrappers();
 
-   /// Standart serialization helpers (ASCII/ML and simple binary)
-   void GenerateSerializationCode();
-
    /// Complete class list for debugging information
    void GenerateClassesList( buffered_stream& Out ) const;
 
