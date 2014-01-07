@@ -145,7 +145,9 @@ void clPackage::GenerateEnumConverterHeaders( const string& FileName )
 
       for ( size_t i = 0 ; i < FEnums.size() ; i++ )
       {
-         Out << "enum " << FEnums[i].FEnumName << ";" << endl << endl;
+			// for C++11 we may use forward defs
+//         Out << "enum " << FEnums[i].FEnumName << ";" << endl << endl;
+         Out << "#include \"" << FEnums[i].FDeclaredIn << "\"" << endl << endl;
 
          FEnums[i].GenerateConverterHeaders( Out );
          Out << endl;
@@ -158,11 +160,16 @@ void clPackage::GenerateEnumConverterHeaders( const string& FileName )
    Out << "#endif" << "  // " << IncludeGuard << endl;
 }
 
+LString clPackage::GetEnumConvertersIncludeFile() const
+{
+	return FPackageName + "_EnumConverters.h";
+}
+
 void clPackage::GenerateEnumConverters( const string& FileNameBase )
 {
    buffered_stream Out( string( FileNameBase + string( ".cpp" ) ).c_str() );
 
-   Out << "#include \"Generated/" << FPackageName << "_EnumConverters.h\"" << endl;
+   Out << "#include \"Generated/" << GetEnumConvertersIncludeFile() << "\"" << endl;
 
    // include every file with type definitions and declare converters
 
@@ -307,6 +314,9 @@ void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
 
    Out.Include( "Core/VFS/ML.h" );
    Out << endl;
+
+	Out.Include( "Generated/" + this->GetEnumConvertersIncludeFile() );
+	Out << endl;
 }
 
 void clPackage::GenerateExportsH( buffered_stream& Out ) const

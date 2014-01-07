@@ -217,6 +217,9 @@ private:
 
    /// Declare ToString and FromString converter prototypes for every enum in this package
    void GenerateEnumConverters( const string& FileName );
+
+	LString GetEnumConvertersIncludeFile() const;
+
 #pragma endregion
 
 #pragma region C++ parsing

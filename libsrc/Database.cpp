@@ -299,6 +299,12 @@ bool clDatabase::InheritsFrom( const string& Class, const string& BaseClass )
    return false;
 }
 
+bool clDatabase::IsEnumType( const string& TypeName )
+{
+	if(IsEnum.count(TypeName) > 0) { return IsEnum[TypeName];}
+
+	return false;
+}
 
 bool clDatabase::IsScalarType( const string& type )
 {
@@ -351,6 +357,7 @@ void clDatabase::ParseNETTypeMapString( const string& In )
 
    IsClass[NativeName]  = false;
    IsPOD[NativeName]    = false;
+   IsEnum[NativeName]   = false;
    IsScalar[NativeName] = false;
 
    if ( Parts.size() > 2 )
@@ -369,6 +376,11 @@ void clDatabase::ParseNETTypeMapString( const string& In )
       {
 //       cout << NativeName << " is a pod" << endl;
          IsPOD[NativeName]    = true;
+      }
+      else if ( Parts[2] == "enum" )
+      {
+//       cout << NativeName << " is an enum" << endl;
+         IsEnum[NativeName]    = true;
       }
 
       if ( Parts.size() > 3 )

@@ -92,6 +92,7 @@ public:
    bool IsPointer( const string& TypeName );
    bool IsConstType( const string& TypeName );
    bool IsSmartPointer( const string& TypeName );
+	bool IsEnumType( const string& TypeName );
 
 	string ExtractSmartPointerType( const string& TypeName );
 
@@ -177,6 +178,7 @@ public:
    map<string, clMacroDef> PropertyMacros;
 
    map<string, bool> IsPOD;
+   map<string, bool> IsEnum;
    map<string, bool> IsClass;
    map<string, bool> IsScalar;
 
