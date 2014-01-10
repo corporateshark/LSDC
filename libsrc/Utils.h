@@ -65,6 +65,8 @@ vector<string> SplitLineSep( const string& Str, char Sep );
 /// Remove "" from the string
 string TrimQuotes( const string& Str );
 
+string AddQuotesIfNone(const string& S);
+
 bool FileExists( const string& fname );
 
 /// Returns true if the item was added

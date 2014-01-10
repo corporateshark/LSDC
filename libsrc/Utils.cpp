@@ -318,6 +318,15 @@ string GetCurrentVersion()
 	return EngineVersion;
 }
 
+string AddQuotesIfNone(const string& S)
+{
+	if(S.length() < 2) { return "\"\""; }
+
+	if(S[0] != '\"' && S[S.length() - 1] != '\"') { return string("\"") + S + string("\""); }
+
+	return S;
+}
+
 /*
  * 27/07/2007
      It's here

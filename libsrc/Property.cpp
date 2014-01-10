@@ -354,13 +354,13 @@ string clProperty::GetIndexerStuffInitialization() const
 
 string clProperty::DeclareNETProperty() const
 {
-	if ( SmartPointer )
+/*	if ( SmartPointer )
    {
 		if ( Verbose ) cout << "Skipping smartpointer property .NET declaration: " << Name << " " << Type << endl;
 
       // TODO: declare smart pointer property to a wrapped class
 		return "";
-   }
+   }*/
 
    if ( !IndexType.empty() ) { return GetIndexerStuffDefinition(); }
 
@@ -411,8 +411,8 @@ string clProperty::DeclareNETProperty() const
 
    string PropertyParams = "";
 
-   AddParam_NoValue( PropertyParams, Description == "" ? string( "\"\"" ) : Description );
-   AddParam_NoValue( PropertyParams, Category == "" ? string( "\"\"" ) : Category );
+   AddParam_NoValue( PropertyParams, Description == "" ? string( "\"\"" ) : AddQuotesIfNone( Description ) );
+   AddParam_NoValue( PropertyParams, Category == "" ? string( "\"\"" ) : AddQuotesIfNone( Category ) );
 
    // add ^ to the end, if it is a .NET class, not POD
    string ModifiedType = FDatabase->AddNETReferenceModifierIfNeeded( Type );
@@ -461,13 +461,13 @@ string clProperty::DeclareNETProperty() const
 
 string clProperty::DeclareNETProperty_Impl() const
 {
-	if ( SmartPointer )
+/*	if ( SmartPointer )
    {
 		if ( Verbose ) cout << "Skipping smartpointer property .NET implementation: " << Name << " " << Type << endl;
 
       // TODO: declare smart pointer property to a wrapped class
 		return "";
-   }
+   }*/
 
    if ( !IndexType.empty() ) { return ""; }
 
