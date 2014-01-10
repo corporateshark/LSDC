@@ -378,10 +378,14 @@ string clProperty::DeclareNETProperty() const
 
    bool Wrapped = false;
 
+   bool AddNativeTypeToDescription = false;
+
    if ( FDatabase->IsScalarType( Type ) )
    {
       // declare scalar property with direct field access
       PropertyDeclarator = "DECLARE_SCALAR_PROPERTY";
+
+      AddNativeTypeToDescription = true;
    }
    else
    {
@@ -404,6 +408,8 @@ string clProperty::DeclareNETProperty() const
          PropertyDeclarator = "DECLARE_POD_PROPERTY";
 
          AddNativeConverters = true;
+
+         AddNativeTypeToDescription = true;
       }
    }
 
@@ -413,6 +419,8 @@ string clProperty::DeclareNETProperty() const
 
    AddParam_NoValue( PropertyParams, Description == "" ? string( "\"\"" ) : AddQuotesIfNone( Description ) );
    AddParam_NoValue( PropertyParams, Category == "" ? string( "\"\"" ) : AddQuotesIfNone( Category ) );
+
+   if(AddNativeTypeToDescription) { AddParam_NoValue( PropertyParams, Type); }
 
    // add ^ to the end, if it is a .NET class, not POD
    string ModifiedType = FDatabase->AddNETReferenceModifierIfNeeded( Type );
@@ -486,7 +494,11 @@ string clProperty::DeclareNETProperty_Impl() const
          if ( Getter.empty() && Setter.empty() )
          {
             // direct access to native field
-            string Result("DECLARE_WRAPPER_PROPERTY_DIRECT_IMPL(");
+            string Result("DECLARE_WRAPPER_PROPERTY_DIRECT_IMPL");
+
+            if(SmartPointer) { Result += "_SMARTPTR"; }
+
+            Result += "(";
 
             Result += FClassName + string(", ");
             Result += Type + string(", ");
@@ -499,7 +511,12 @@ string clProperty::DeclareNETProperty_Impl() const
          } else
          if(!AccessModifier.empty())
          {
-            string Result(string("DECLARE_WRAPPER_PROPERTY") + AccessModifier + string("_IMPL("));
+            string Result("DECLARE_WRAPPER_PROPERTY");
+            Result += AccessModifier + string("_IMPL");
+
+            if(SmartPointer) { Result += "_SMARTPTR"; }
+
+            Result += string("(");
 
             Result += FClassName + string(", ");
             Result += Type + string(", ");
