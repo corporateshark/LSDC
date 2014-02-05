@@ -750,7 +750,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 		}
 	}
 
-	if ( IsScalar )
+	if ( IsScalar && !Accessor )
 	{
 		string Conv = Load ? GetFromStringConverter() : GetToStringConverter();
 
@@ -762,7 +762,21 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 
 	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor) || NeedType )
 	{
-		res += ", " + Type;
+		// HACK with strings
+		if(Type == "string")
+		{
+			res += ", LString";
+		}
+		else
+		{
+			res += ", " + Type;
+		}
+	}
+
+	if( IsScalar && Accessor )
+	{
+		// accessor needs both ToString/FromString methods
+		res += ", " + GetToStringConverter() + ", " + GetFromStringConverter();
 	}
 
 	res += string( ")\n" );
@@ -801,12 +815,15 @@ string clProperty::GetLoadSaveDeclarations() const
 		if(!isScalar)
 		{
 			// Get-accessor
-
 			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() ) );
 			// Set-accessor
 			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() ) );
 		} else
 		{
+			// Get-accessor
+			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,   true, GetToStringConverter() ) );
+			// Set-accessor
+			res += FDatabase->ExpandMacro( GetBinderMacro( isArray, isScalar, true,  false, GetToStringConverter() ) );
 		}
 	}
 	else
@@ -903,11 +920,10 @@ string clProperty::GetRegistrationCode() const
       }
    }
 
-   string RegCommon = string( ", " ) + FClassName + string ( ", " ) + Name + string( ")\n" );
+   string RegCommon = string( ", " ) + FClassName + ", " + Name;
 
-   res += RegCommon;
-
-   add_res += RegCommon;
+   res += RegCommon + ", " + Type + ")";
+   add_res += RegCommon + ")";
 
    if ( isArray )
    {
