@@ -295,6 +295,9 @@ bool clClass::GenerateDotNETRefClass( buffered_stream& Out )
 
    string FullNativeType = string( "::" ) + FClassName; // TODO : get namespace information
 
+	Out << "\tTYPE_CONVERTER_PREAMBLE(" << FClassName << ")";
+	Out.endl();
+
    Out << "\tpublic ref class " << FClassName;
 
    if ( FBaseClasses.size() > 0 )
