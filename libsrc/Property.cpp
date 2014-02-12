@@ -63,6 +63,10 @@ string clProperty::ToString() const
    AddParam( ParamList, "ErrorLogger",         ErrorLogger );
    AddParam( ParamList, "NetIndexedGetter",    NetIndexedGetter );
    AddParam( ParamList, "NetIndexedSetter",    NetIndexedSetter );
+   AddParam( ParamList, "NetAddFunction",      NetAddFunction );
+   AddParam( ParamList, "NetRemoveFunction",   NetRemoveFunction );
+   AddParam( ParamList, "NetClearFunction",    NetClearFunction );
+   AddParam( ParamList, "NetCounterFunction",  NetCounterFunction );
 
    return P + string( "(" ) + ParamList + string( ")" );
 }
@@ -84,6 +88,10 @@ void clProperty::SetParam( const string& ParamName, const string& ParamValue )
 {
    AssignP( NetIndexedGetter )
    AssignP( NetIndexedSetter )
+   AssignP( NetAddFunction )
+   AssignP( NetRemoveFunction )
+   AssignP( NetClearFunction )
+   AssignP( NetCounterFunction )
    AssignP( Getter )
    AssignP( Setter )
    AssignP( Description )
@@ -320,9 +328,25 @@ string clProperty::GetIndexerStuffDefinition() const
 {
 	if ( IndexType.empty() ) { return ""; }
 
+/*
 	string res = "DEFINE_INDEXER_STUFF(";
 
 	res += Name + string( ", " );
+
+	res += FDatabase->NativeToNet[IndexType] + string( ", " );
+	res += FDatabase->AddNETReferenceModifierIfNeeded( Type ) + string( ")" );*/
+
+	// "ManagedType, NativeType, ";
+	string res = "DEFINE_INDEXED_PROPERTY";
+
+	if( !IsIndexSupported()) { res += "_NO_LIST"; }
+
+	res += "(";
+
+	res += Type + string(", "); // ManagedType ?
+	res += Type + string(", "); // NativeType ? do it carefully ?
+
+	res += Name + string(", ");
 
 	res += FDatabase->NativeToNet[IndexType] + string( ", " );
 	res += FDatabase->AddNETReferenceModifierIfNeeded( Type ) + string( ")" );
@@ -342,7 +366,11 @@ string clProperty::GetIndexerStuffInitialization() const
 	// TODO : if there is no indexed getter and indexed setter, we can use direct access with converters
 	// This requires careful handling of POD/Object types and To/From Netconverters
 
-	string res = "INIT_INDEXER_STUFF(";
+	string res = "INIT_INDEXER_STUFF";
+
+	if( !IsIndexSupported() ) { res += "_NO_LIST"; }
+
+	res += "(";
 
 	res += Name + string( ", " );
 	res += FClassName + string( ", " );
@@ -469,15 +497,42 @@ string clProperty::DeclareNETProperty() const
 
 string clProperty::DeclareNETProperty_Impl() const
 {
-/*	if ( SmartPointer )
-   {
-		if ( Verbose ) cout << "Skipping smartpointer property .NET implementation: " << Name << " " << Type << endl;
+	if ( !IndexType.empty() )
+	{
+		// scalar types are not here yet
+		if ( !FDatabase->IsScalarType( Type ) )
+		{
+			if( !IsIndexSupported() )
+			{
+				return "";
+			}
 
-      // TODO: declare smart pointer property to a wrapped class
+			string Result("IMPLEMENT_LIST_PROPERTY_ACCESSOR_");
+
+			if(SmartPointer) { Result += "SMARTPTR"; } else { Result += "PTR"; }
+
+			Result += "(";
+
+			Result += Type + ", "; // ManagedType
+			Result += Type + ", "; // NativeType
+			Result += Name + ", "; // PropName
+			Result += NetIndexedGetter  + ", ";
+			Result += NetIndexedSetter  + ", ";
+			Result += NetAddFunction    + ", ";
+			Result += NetRemoveFunction + ", ";
+			Result += NetCounterFunction; // add Remover function and ClearFunction
+
+			Result += ")";
+
+			//(clSceneNode, clSceneNode, SubNodes, GetSubNode, SetSubNode, Add, Remove, GetTotalSubNodes)
+
+			//IMPLEMENT_LIST_PROPERTY_ACCESSOR_PTR(iGUIView, iGUIView, ChildViews, GetSubView, SetSubView, AddView, RemoveView, GetNumSubViews)
+
+	        	return Result;
+		}
+
 		return "";
-   }*/
-
-   if ( !IndexType.empty() ) { return ""; }
+	}
 
    string AccessModifier = "";
 

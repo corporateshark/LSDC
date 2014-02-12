@@ -55,6 +55,22 @@ struct clProperty
    /// 'set' method for indexed property access - C++/CLI specific
    string NetIndexedSetter;
 
+   /// 'add' function for IList<T> implementation
+   string NetAddFunction;
+   /// 'remove' function for IList<T> implementation
+   string NetRemoveFunction;
+   /// 'clear' function for IList<T> implementation
+   string NetClearFunction;
+   /// 'count' function for IList<T> implementation
+   string NetCounterFunction;
+
+   /// Can we declare indexer for this prop
+   bool IsIndexSupported() const
+   {
+	return !(NetIndexedGetter.empty() || NetIndexedSetter.empty() ||
+				NetAddFunction.empty() || NetRemoveFunction.empty() || NetCounterFunction.empty() );
+   }
+
    /// if it is a direct field access, then this field accessor is defined
    string FieldName;
 

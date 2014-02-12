@@ -45,6 +45,8 @@ void clPackage::GenerateDotNETWrappers()
 
    Out << endl;
 
+   Out << "using namespace System::Collections;" << endl;
+   Out << "using namespace System::Collections::Generic;" << endl;
    Out << "using namespace System::ComponentModel;" << endl;
    Out << "using namespace System::Globalization;" << endl;
 
