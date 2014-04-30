@@ -619,13 +619,14 @@ bool clPackage::IsWrappedClass( const string& ClassName )
 
    return FClasses[ClassName].FNetExportable;
 }
-
+/*
 bool clPackage::IsSerializableClass( const string& ClassName )
 {
    if ( FClasses.count( ClassName ) <= 0 ) { return false; }
 
    return FClasses[ClassName].FSerializable;
 }
+*/
 
 void clPackage::GenerateScriptExport()
 {

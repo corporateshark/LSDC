@@ -614,7 +614,7 @@ bool clHeaderProcessor::SaveAccessModifier( const string& S )
 
    return false;
 }
-
+/*
 bool clHeaderProcessor::CheckClassAttributes( clClass* TheClass )
 {
    bool NetExportableSign = ( Line.find( "NET_EXPORTABLE()" ) != -1 );
@@ -627,7 +627,7 @@ bool clHeaderProcessor::CheckClassAttributes( clClass* TheClass )
    // report if we have read some of the attribute modifiers
    return ( NetExportableSign || SerializableSign );
 }
-
+*/
 bool clHeaderProcessor::ReadMultilineMethodProto()
 {
    while ( Line[Line.length()-1] == ',' )
@@ -718,7 +718,7 @@ bool clHeaderProcessor::ParseClassBody( clClass* TheClass )
    {
       if ( SkipComments() ) { continue; }
 
-      if ( CheckClassAttributes( TheClass ) ) { continue; }
+//      if ( CheckClassAttributes( TheClass ) ) { continue; }
 
       if ( FindCharOutOfBraces( Line, '{' ) && !FirstLine ) { NestingLevel++; }
 

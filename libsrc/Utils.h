@@ -4,8 +4,8 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.9.57
- * \date 15/12/2013
+ * \version 0.9.59
+ * \date 30/04/2014
  * \author Sergey Kosarevsky, 2005-2014
  * \author Viktor Latypov, 2007-2014
  * \author support@linderdaum.com http://www.linderdaum.com
@@ -40,9 +40,9 @@ extern bool Verbose;
 
 const char TAB_CHAR = 0x9;
 
-const string EngineVersion = "0.6.30";
-const string LSDCVersion = "0.9.58";
-const string LSDCDate = "11/01/2014";
+const string EngineVersion = "0.6.32";
+const string LSDCVersion = "0.9.59";
+const string LSDCDate = "30/04/2014";
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 
 typedef vector<string>    clStringsList;

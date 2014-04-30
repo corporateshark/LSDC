@@ -202,7 +202,7 @@ bool clDatabase::IsWrappedClass( const string& ClassName )
 
    return false;
 }
-
+/*
 bool clDatabase::IsSerializableClass( const string& ClassName )
 {
    // call ProgramDatabase from LSDC.h
@@ -213,7 +213,7 @@ bool clDatabase::IsSerializableClass( const string& ClassName )
 
    return false;
 }
-
+*/
 // TODO : iterate packages or just pick Classes[ClassName]->Package->GetRootClassFor()
 string clDatabase::GetRootestClassFor( const string& ClassName )
 {

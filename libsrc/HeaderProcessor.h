@@ -98,7 +98,7 @@ private:
    bool ParseClassBody( clClass* TheClass );
 
    /// Read additional SERIALIZABLE_CLASS/NET_EXPORTABLE attributes
-   bool CheckClassAttributes( clClass* TheClass );
+//   bool CheckClassAttributes( clClass* TheClass );
 
    /// Read the list of base classes, class attributes and extract class name
    bool ReadClassNamesAndAttributes( int ClassNameOffset, clClass* TheClass );

@@ -72,7 +72,7 @@ public:
    bool IsWrappedClass( const string& ClassName );
 
    /// Check if this is the class marked as SERIALIZABLE_CLASS()
-   bool IsSerializableClass( const string& ClassName );
+//   bool IsSerializableClass( const string& ClassName );
 
    /// Get the top-most ancestor for the specified class
    string GetRootestClassFor( const string& ClassName );

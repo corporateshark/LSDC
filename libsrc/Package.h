@@ -146,7 +146,7 @@ public:
    bool IsWrappedClass( const string& ClassName );
 
    /// Check if this class is marked SERIALIZABLE_CLASS()
-   bool IsSerializableClass( const string& ClassName );
+//   bool IsSerializableClass( const string& ClassName );
 
    /// Check inheritance relation between two classes
    bool InheritsFrom( const string& Class, const string& BaseClass ) const;

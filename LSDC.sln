@@ -1,16 +1,10 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSDC", "LSDC.vcproj", "{28124CBC-4AD4-4C18-ADC4-87C365160189}"
-	ProjectSection(ProjectDependencies) = postProject
-		{85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2} = {85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSDC", "LSDC.vcxproj", "{28124CBC-4AD4-4C18-ADC4-87C365160189}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcproj", "{FEE7B4E5-F944-45B3-8E85-25FCD6A7C5F1}"
-	ProjectSection(ProjectDependencies) = postProject
-		{85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2} = {85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcxproj", "{FEE7B4E5-F944-45B3-8E85-25FCD6A7C5F1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSDCLib", "LSDCLib.vcproj", "{85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LSDCLib", "LSDCLib.vcxproj", "{85AA7B55-DC58-4AA5-BEE9-F6C7E21406E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
