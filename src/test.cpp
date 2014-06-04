@@ -136,9 +136,17 @@ void test_macros()
    Out << Res;
 }
 
+void test_enums()
+{
+   clDatabase DB;
+
+   DB.ProcessPackageDirectory( "test" );
+}
+
 int main( int argc, char** argv )
 {
-   test_macros();
+   test_enums();
+//   test_macros();
 
    //test_properties();
 
