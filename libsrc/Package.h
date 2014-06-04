@@ -12,7 +12,6 @@ struct clDatabase;
 
 // some directory names for code generation
 const string StatisticsDirName    = "Stats";
-const string SerializationDirName = "Serialization";
 const string ScriptDirName        = "Script";
 const string ExportDirName        = "Export";
 const string NETDirName           = "NET";
@@ -242,6 +241,8 @@ private:
      For the MSVS.2002/2003 compiler we have to split
     class/method registration into multiple files
     because the linker does not allow too much symbol declarations
+
+       LV. 2014:  Now it turns out that splitting metainfo into multiple files really is useful in parallel multi-core compilation
    */
 
    /// Generate standart starting part for the class exports file

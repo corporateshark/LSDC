@@ -13,76 +13,270 @@
 
 #include "Enums.h"
 
-void clEnum::FromStringConverterHeader( buffered_stream& Out ) const
+#include <iostream>
+
+const std::string DefValueStr = "defaultvalue(";
+const std::string ToStrConv = "tostringconverter(";
+const std::string FromStrConv = "fromstringconverter(";
+
+clEnum::clEnum(clPackage* PackageIdx, string DeclaredIn ): FLastItemValue( "-1" ),
+	FPackage( PackageIdx ),
+	FDeclaredIn( ReplaceAll(DeclaredIn, '\\', '/' ) ),
+	FDefaultItemValue( "" ),
+	FToStringConverterName( "" ),
+	FFromStringConverterName( "" ),
+	FItems(),
+	FStripName(false),
+	FExported(true)
 {
-// Out << "/// FromString_Converter for " << FEnumName << endl;
+}
 
-   string RealCvtName = FFromStringConverterName.empty() ? ( FEnumName + string( "_FromString" ) ) : FFromStringConverterName;
+// TODO: use inlines ExtractBracketedParameter and ParseParam from HeaderProcessor.cpp
+bool clEnum::CheckOption(const std::string& Part)
+{
+	if(Part == "noexport")
+	{
+		FExported = false;
+	} else
+	if(Part == "stripname")
+	{
+		FStripName = true;
+	} else
+/*	if(Part.find("asserterrors") != std::string::npos)
+	{
+	} else */
+	{
+		size_t dvalStart = Part.find(DefValueStr);
 
-   Out << FEnumName << " " << RealCvtName << "(const LString& Str)";
+		if(dvalStart != std::string::npos)
+		{
+			std::string o = Part.substr(DefValueStr.length());
+
+			size_t bracketPos = o.find(")");
+
+			if(bracketPos != std::string::npos)
+			{
+				o = o.substr(0, bracketPos);
+
+//				std::cout << "DefValue = " << o << std::endl;
+				FDefaultItemValue = o;
+			} else
+			{
+				// invalid option
+				return false;
+			}
+		} else
+		{
+			size_t tostrStart = Part.find(ToStrConv);
+			size_t fromstrStart = Part.find(FromStrConv);
+
+			if(tostrStart != std::string::npos)
+			{
+				std::string o = Part.substr(ToStrConv.length());
+				size_t bracketPos = o.find(")");
+
+				if(bracketPos != std::string::npos)
+				{
+					o = o.substr(0, bracketPos);
+//					std::cout << "ToStrConv = " << o << std::endl;
+
+					FToStringConverterName = o;
+				} else
+				{
+					// invalid option
+					return false;
+				}
+			} else
+			if(fromstrStart != std::string::npos)
+			{
+				std::string o = Part.substr(FromStrConv.length());
+				size_t bracketPos = o.find(")");
+
+				if(bracketPos != std::string::npos)
+				{
+					o = o.substr(0, bracketPos);
+//					std::cout << "FromStrConv = " << o << std::endl;
+
+					FFromStringConverterName = o;
+				} else
+				{
+					// invalid option
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+bool clEnum::ParseNameAndParams(const std::string& S)
+{
+	std::vector<std::string> Parts;
+	SplitLine( S, Parts, true);
+
+//	std::cout << "Enum descriptor: " << S << std::endl;
+
+	// first N-1 parts are the options
+	for(size_t j = 0 ; j < Parts.size() - 1; j++)
+	{
+//		std::cout << "Parts[" << j << "] = "<< Parts[j] << std::endl;
+
+		if(!CheckOption(Parts[j]))
+		{
+//			std::cout << "Invalid option: " << Parts[j] << std::endl;
+
+			return false;
+		}
+	}
+
+	FEnumName = Parts[Parts.size() - 1];
+
+//	std::cout << "Enum name = " << FEnumName << std::endl;
+
+	return true;
+}
+
+void clEnum::FromStringConverterHeader( buffered_stream& Out, bool InHeader ) const
+{
+	// Out << "/// FromString_Converter for " << FEnumName << endl;
+	string RealCvtName = FFromStringConverterName.empty() ? ( FEnumName + string( "_FromString" ) ) : FFromStringConverterName;
+
+	Out << FEnumName << " " << RealCvtName << "(const LString& Str, bool* ErrorCodePtr" << (InHeader ? string(" = NULL") : string("")) << ")";
 }
 
 void clEnum::ToStringConverterHeader( buffered_stream& Out ) const
 {
-// Out << "/// ToString_Converter for " << FEnumName << endl;
+	// Out << "/// ToString_Converter for " << FEnumName << endl;
 
-   string RealCvtName = FToStringConverterName.empty() ? ( FEnumName + string( "_ToString" ) ) : FToStringConverterName;
+	string RealCvtName = FToStringConverterName.empty() ? ( FEnumName + string( "_ToString" ) ) : FToStringConverterName;
 
-   Out << "LString " << RealCvtName << "(" << FEnumName << " TheValue)";
+	Out << "LString " << RealCvtName << "(" << FEnumName << " TheValue)";
 }
 
 void clEnum::GenerateConverterHeaders( buffered_stream& Out ) const
 {
-   ToStringConverterHeader( Out );
-   Out << ";" << endl;
-   FromStringConverterHeader( Out );
-   Out << ";" << endl;
+	ToStringConverterHeader( Out );
+	Out << ";" << endl;
+	FromStringConverterHeader( Out );
+	Out << ";" << endl;
 }
 
 void clEnum::GenerateToStringConverter( buffered_stream& Out ) const
 {
-   ToStringConverterHeader( Out );
-   Out << endl;
+	ToStringConverterHeader( Out );
 
-   Out << "{" << endl;
+	Out << endl << "{" << endl;
 
-   for ( size_t i = 0 ; i < FItems.size() ; i++ )
-   {
-      Out << "\tif (TheValue == " << FItems[i].FItemName << ") return \"" << FItems[i].FItemName << "\";" << endl;
-   }
+	for ( size_t i = 0 ; i < FItems.size() ; i++ )
+	{
+		std::string ItemName = FItems[i].FItemName;
 
-   Out << endl << "\treturn \"\";" << endl;
+		// optional name stripping
+		if(FStripName) { ItemName = FItems[i].GetStrippedName(FEnumName); }
 
-   Out << "}" << endl;
+		Out << "\tif (TheValue == " << FItems[i].FItemName << ") return \"" << ItemName << "\";" << endl;
+	}
+
+	Out << endl << "\treturn \"\";" << endl << "}" << endl;
 }
 
 void clEnum::GenerateFromStringConverter( buffered_stream& Out ) const
 {
-   FromStringConverterHeader( Out );
-   Out << endl;
+	FromStringConverterHeader( Out, false );
 
-   Out << "{" << endl;
+	Out << endl << "{" << endl;
 
-   for ( size_t i = 0 ; i < FItems.size() ; i++ )
-   {
-      Out << "\tif (Str == \"" << FItems[i].FItemName << "\") return " << FItems[i].FItemName << ";" << endl;
-   }
+	Out << "\tif(ErrorCodePtr)" << endl << "\t{" << endl;
+	Out << "\t\t*ErrorCodePtr = false;" << endl;
+	Out << "\t}" << endl << endl;
 
-   // return some default value
-   Out << endl << "\treturn ";
+	for ( size_t i = 0 ; i < FItems.size() ; i++ )
+	{
+		if(!FItems[i].FExported) { continue; }
 
-   if ( FDefaultItemValue.empty() )
-   {
-      Out << "static_cast<" << FEnumName << ">(-1)";
-   }
-   else
-   {
-      Out << FDefaultItemValue;
-   }
+		Out << "\tif (Str == \"" << FItems[i].FItemName << "\"";
 
-   Out << ";" << endl;
+		// optional name stripping
+		Out << " || Str == \"" << FItems[i].GetStrippedName(FEnumName);
 
-   Out << "}" << endl;
+		Out << "\")" << endl;
+
+		Out << "\t{" << endl;
+
+		if(FItems[i].FAssertInConverter)
+		{
+			// invalid value, generate assert
+			Out << "\t\t// This value was marked as invalid" << endl;
+			Out << "\t\tLASSERT(false);" << endl;
+		} else
+		{
+			Out << "\t\treturn " << FItems[i].FItemName << ";" << endl;
+		}
+
+		Out << "\t}" << endl;
+	}
+
+	Out << endl;
+	Out << "\tif(ErrorCodePtr)" << endl << "\t{" << endl;
+	Out << "\t\t*ErrorCodePtr = true;" << endl;
+	Out << "\t}" << endl;
+
+	// return some default value
+	Out << endl << "\treturn ";
+
+	if ( FDefaultItemValue.empty() )
+	{
+		Out << "static_cast<" << FEnumName << ">(-1)";
+	}
+	else
+	{
+		Out << FDefaultItemValue;
+	}
+
+	Out << ";" << endl << "}" << endl;
+}
+
+void clEnumItem::ParseParamsAndValue()
+{
+	LString S = FItemName;
+
+	std::vector<std::string> Parts;
+	SplitLine( S, Parts, true);
+
+//	std::cout << "Enum item descriptor: " << S << std::endl;
+
+	// first N-1 parts are the options
+	for(size_t j = 0 ; j < Parts.size() - 1; j++)
+	{
+//		std::cout << "Parts[" << j << "] = "<< Parts[j] << std::endl;
+
+		if(Parts[j] == "noexport")
+		{
+			FExported = false;
+		} else
+		if(Parts[j] == "assertinconverter")
+		{
+			FAssertInConverter = true;
+		}
+	}
+
+	FItemName = Parts[Parts.size() - 1];
+
+//	std::cout << "Enum item name = " << FItemName << std::endl;
+}
+
+clEnumItem::clEnumItem():
+	FExported(true),
+	FAssertInConverter(false)
+{
+}
+
+std::string clEnumItem::GetStrippedName(const std::string& S) const
+{
+	if( (FItemName.length() < S.length() + 1) || (FItemName.find(S) == std::string::npos)) { return FItemName; }
+
+	return FItemName.substr(S.length() + 1);
 }
 
 /*

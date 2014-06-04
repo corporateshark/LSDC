@@ -89,23 +89,23 @@ inline bool IsValidClass( const string& Line )
 /// Extract "Parameter" (without quotes) from MACRO_NAME("Parameter")
 inline string ExtractBracketedParameter( const string& L )
 {
-   int Start = L.find_first_of( "(" );
-   int End   = L.find_first_of( ")" );
+	int Start = L.find_first_of( "(" );
+	int End   = L.find_first_of( ")" );
 
-   string Param = L.substr( Start + 1, End - Start - 1 );
+	string Param = L.substr( Start + 1, End - Start - 1 );
 
-   return TrimQuotes( Param );
+	return TrimQuotes( Param );
 }
 
 inline bool ParseParam( const string& PName, string& Value, const string& Line )
 {
-   if ( Line.find( PName ) != -1 )
-   {
-      Value = ExtractBracketedParameter( Line );
-      return true;
-   }
+	if ( Line.find( PName ) != -1 )
+	{
+		Value = ExtractBracketedParameter( Line );
+		return true;
+	}
 
-   return false;
+	return false;
 }
 
 inline bool ParseParamItem( const string& PName, vector<string>& Values, const string& Line )
@@ -206,155 +206,165 @@ bool clHeaderProcessor::ProcessSpecialParameters()
 
 bool clHeaderProcessor::GetNextLine( string& L )
 {
-   getline( In, L );
+	getline( In, L );
 
-   bool res = !In.eof();
+	bool res = !In.eof();
 
-   if ( res ) { CurrentLine++; }
+	if ( res ) { CurrentLine++; }
 
-   return res;
+	return res;
 }
 
 bool clHeaderProcessor::TryParseEnum()
 {
-   size_t EnumPos = Line.find( "enum " );
+	size_t EnumPos = Line.find( "enum " );
 
-   if ( EnumPos != 0 ) { return false; }
+	if ( EnumPos != 0 ) { return false; }
 
-   // parse only named enums
-   Line = TrimSpaces( TrimComments( Line.substr( 5, Line.length() - 5 ) ) );
+	// parse only named enums
+	Line = TrimSpaces( TrimComments( Line.substr( 5, Line.length() - 5 ) ) );
 
-   // bypass unnamed enums
-   if ( Line.empty() ) { return false; }
+	// bypass unnamed enums
+	if ( Line.empty() ) { return false; }
 
-   if ( Line[0] == '{' ) { return false; }
+	if ( Line[0] == '{' ) { return false; }
 
-   while ( ( Line.find( '}' ) == -1 ) && ( Line.find( ';' ) == -1 ) )
-   {
-      // its a multilined declaration
-      string NextLine;
+	while ( ( Line.find( '}' ) == -1 ) && ( Line.find( ';' ) == -1 ) )
+	{
+		// its a multiline declaration
+		string NextLine;
 
-      if ( !GetNextLine( NextLine ) )
-      {
-         cout << endl;
-         cout << "   ERROR: expected } but EOF found while parsing 'enum': " << Line << endl;
+		if ( !GetNextLine( NextLine ) )
+		{
+			cout << endl;
+			cout << "   ERROR: expected } but EOF found while parsing 'enum': " << Line << endl;
 
-         exit( 255 );
-      }
+			exit( 255 );
+		}
 
-      Line += TrimSpaces( TrimComments( NextLine ) );
-   }
+		Line += TrimSpaces( TrimComments( NextLine ) );
+	}
 
-   size_t BraceOpenPos  = Line.find( '{' );
-   size_t BraceClosePos = Line.find( '}' );
+	size_t BraceOpenPos  = Line.find( '{' );
+	size_t BraceClosePos = Line.find( '}' );
 
-   // bypass forward declarations
-   if ( ( BraceOpenPos == -1 ) && ( BraceClosePos == -1 ) ) { return false; }
+	// bypass forward declarations
+	if ( ( BraceOpenPos == -1 ) && ( BraceClosePos == -1 ) ) { return false; }
 
-   string EnumName = TrimSpaces( TrimComments( Line.substr( 0, BraceOpenPos ) ) );
-   Line = TrimSpaces( Line.substr( EnumName.length(), Line.length() - EnumName.length() ) );
+	string EnumParamsAndName = TrimSpaces( TrimComments( Line.substr( 0, BraceOpenPos ) ) );
 
-   // it's something strange
-   if ( Line[0] != '{' ) { return false; }
+	Line = TrimSpaces( Line.substr( EnumParamsAndName.length(), Line.length() - EnumParamsAndName.length() ) );
 
-   BraceOpenPos  = Line.find( '{' );
-   BraceClosePos = Line.find( '}' );
+	// it's something strange
+	if ( Line[0] != '{' ) { return false; }
 
-   // it's something strange
-   if ( BraceClosePos == -1 ) { return false; }
+	BraceOpenPos  = Line.find( '{' );
+	BraceClosePos = Line.find( '}' );
 
-   Line = TrimSpaces( TrimComments( Line.substr( BraceOpenPos + 1, BraceClosePos - BraceOpenPos - 1 ) ) );
+	// it's something strange
+	if ( BraceClosePos == std::string::npos ) { return false; }
 
-   clEnum Enum( EnumName, FPackage, IncFileName );
+	Line = TrimSpaces( TrimComments( Line.substr( BraceOpenPos + 1, BraceClosePos - BraceOpenPos - 1 ) ) );
 
-   // parse enum items
-   while ( !Line.empty() )
-   {
-      clEnumItem Item;
+	clEnum Enum( FPackage, IncFileName );
 
-      Item.FItemName  = Line;
-      Item.FItemValue = "";
+	if(!Enum.ParseNameAndParams(EnumParamsAndName))
+	{
+		cout << endl << "   ERROR: could not parse 'enum' parameters: " << EnumParamsAndName << endl;
+		exit( 255 );
+		return false;
+	}
 
-      size_t CommaPos  = Line.find( ',' );
+	// parse enum items
+	while ( !Line.empty() )
+	{
+		clEnumItem Item;
 
-      if ( CommaPos != -1 )
-      {
-         Item.FItemName = TrimSpaces( TrimComments( Line.substr( 0, CommaPos ) ) );
-         Line = TrimSpaces( TrimComments( Line.substr( CommaPos + 1, Line.length() - CommaPos ) ) );
-      }
-      else
-      {
-         Line = "";
-      }
+		Item.FItemName  = Line;
+		Item.FItemValue = "";
 
-      size_t AssignPos = Item.FItemName.find( '=' );
+		size_t CommaPos  = Line.find( ',' );
 
-      if ( AssignPos != -1 )
-      {
-         Item.FItemValue = TrimSpaces( TrimComments( Item.FItemName.substr( AssignPos + 1, Item.FItemName.length() - AssignPos ) ) );
-         Item.FItemName  = TrimSpaces( TrimComments( Item.FItemName.substr( 0, AssignPos ) ) );
-      }
+		if ( CommaPos != -1 )
+		{
+			Item.FItemName = TrimSpaces( TrimComments( Line.substr( 0, CommaPos ) ) );
+			Line = TrimSpaces( TrimComments( Line.substr( CommaPos + 1, Line.length() - CommaPos ) ) );
+		}
+		else
+		{
+			Line = "";
+		}
+
+		size_t AssignPos = Item.FItemName.find( '=' );
+
+		if ( AssignPos != -1 )
+		{
+			Item.FItemValue = TrimSpaces( TrimComments( Item.FItemName.substr( AssignPos + 1, Item.FItemName.length() - AssignPos ) ) );
+			Item.FItemName  = TrimSpaces( TrimComments( Item.FItemName.substr( 0, AssignPos ) ) );
+		}
 
 		if ( Item.FItemName.find( "#pragma" ) == 0 ) continue;
 
-      Enum.AddItem( Item );
-   }
+		Item.ParseParamsAndValue();
 
-   FPackage->FEnums.push_back( Enum );
-   // parse exported static symbol name and type.
-   // todo : If we are in Enum, then use 'int' as a symbol type
+		Enum.AddItem( Item );
+	}
 
-   return true;
+	FPackage->FEnums.push_back( Enum );
+	// parse exported static symbol name and type.
+	// todo : If we are in Enum, then use 'int' as a symbol type
+
+	return true;
 }
 
 bool clHeaderProcessor::TryParseConst()
 {
-   size_t ConstPos = Line.find( "const " );
+	size_t ConstPos = Line.find( "const " );
 
-   if ( ConstPos != 0 ) { return false; }
+	if ( ConstPos != 0 ) { return false; }
 
-   Line = TrimSpaces( Line.substr( 6, Line.length() - 6 ) );
+	Line = TrimSpaces( Line.substr( 6, Line.length() - 6 ) );
 
-   size_t SemiPos = Line.find( ";" );
+	size_t SemiPos = Line.find( ";" );
 
-   // parse only single-line consts
-   if ( SemiPos == -1 ) { return false; }
+	// parse only single-line consts
+	if ( SemiPos == -1 ) { return false; }
 
-   size_t AssignPos = Line.find( "=" );
+	size_t AssignPos = Line.find( "=" );
 
-   // probably it's line  "const type name(constructorargs)" - bypass it
-   if ( AssignPos == -1 ) { return false; }
+	// probably it's line  "const type name(constructorargs)" - bypass it
+	if ( AssignPos == -1 ) { return false; }
 
-   string ConstName  = "";
-   string ConstType  = "";
-   string ConstValue = TrimSpaces( Line.substr( AssignPos + 1, SemiPos - AssignPos - 1 ) );
+	string ConstName  = "";
+	string ConstType  = "";
+	string ConstValue = TrimSpaces( Line.substr( AssignPos + 1, SemiPos - AssignPos - 1 ) );
 
-   bool IsArray = false;
+	bool IsArray = false;
 
-   Line = TrimSpaces( Line.substr( 0, AssignPos ) );
+	Line = TrimSpaces( Line.substr( 0, AssignPos ) );
 
-   size_t BracePos = Line.find( "[" );
+	size_t BracePos = Line.find( "[" );
 
-   if ( BracePos != -1 )
-   {
-      // it's an array "const type value[] = ..."
-      IsArray = true;
+	if ( BracePos != -1 )
+	{
+		// it's an array "const type value[] = ..."
+		IsArray = true;
 
-      Line = TrimSpaces( Line.substr( 0, BracePos ) );
-   }
+		Line = TrimSpaces( Line.substr( 0, BracePos ) );
+	}
 
-   // extract method name
-   size_t SpacePos = Line.find_last_of( ' ' );
+	// extract method name
+	size_t SpacePos = Line.find_last_of( ' ' );
 
-   // tabs support
-   if ( SpacePos == -1 ) { SpacePos = Line.find_last_of( '\t' ); }
+	// tabs support
+	if ( SpacePos == -1 ) { SpacePos = Line.find_last_of( '\t' ); }
 
-   ConstName = TrimSpaces( Line.substr( SpacePos + 1, Line.length() - SpacePos ) );
-   ConstType = TrimSpaces( Line.substr( 0, SpacePos ) );
+	ConstName = TrimSpaces( Line.substr( SpacePos + 1, Line.length() - SpacePos ) );
+	ConstType = TrimSpaces( Line.substr( 0, SpacePos ) );
 
-   FPackage->FConsts.push_back( clConst( ConstName, FPackage, IncFileName, ConstType, ConstValue, IsArray ) );
+	FPackage->FConsts.push_back( clConst( ConstName, FPackage, IncFileName, ConstType, ConstValue, IsArray ) );
 
-   return true;
+	return true;
 }
 
 bool clHeaderProcessor::TryParseStaticMethod()
@@ -456,17 +466,17 @@ bool clHeaderProcessor::ReadTillNextCurlyBracket()
 
 bool clHeaderProcessor::SkipComments()
 {
-   Line = TrimSpaces( TrimComments( Line ) );
+	Line = TrimSpaces( TrimComments( Line ) );
 
-   if ( Line.size() == 0 ) { return true; }
+	if ( Line.size() == 0 ) { return true; }
 
-   if ( Line.find( "/*" ) != -1 ) { InsideComment = true; }
+	if ( Line.find( "/*" ) != -1 ) { InsideComment = true; }
 
-   if ( Line.find( "*/" ) != -1 ) { InsideComment = false; }
+	if ( Line.find( "*/" ) != -1 ) { InsideComment = false; }
 
-   if ( InsideComment ) { return true; }
+	if ( InsideComment ) { return true; }
 
-   return false;
+	return false;
 }
 
 // ClassNameOffset is the length of 'struct ' or 'class '
@@ -606,28 +616,15 @@ bool clHeaderProcessor::ProcessFile( const string& FileName )
 
 bool clHeaderProcessor::SaveAccessModifier( const string& S )
 {
-   if ( ( S == "public:" ) || ( S == "protected:" ) || ( S == "private:" ) )
-   {
-      CurrentModifier = S;
-      return true;
-   }
+	if ( ( S == "public:" ) || ( S == "protected:" ) || ( S == "private:" ) )
+	{
+		CurrentModifier = S;
+		return true;
+	}
 
-   return false;
+	return false;
 }
-/*
-bool clHeaderProcessor::CheckClassAttributes( clClass* TheClass )
-{
-   bool NetExportableSign = ( Line.find( "NET_EXPORTABLE()" ) != -1 );
-   bool SerializableSign  = ( Line.find( "SERIALIZABLE_CLASS()" ) != -1 );
 
-   if ( NetExportableSign ) { TheClass->FNetExportable = true; }
-
-   if ( SerializableSign ) { TheClass->FSerializable = true; }
-
-   // report if we have read some of the attribute modifiers
-   return ( NetExportableSign || SerializableSign );
-}
-*/
 bool clHeaderProcessor::ReadMultilineMethodProto()
 {
    while ( Line[Line.length()-1] == ',' )
@@ -709,65 +706,63 @@ bool clHeaderProcessor::ParseMethodProto( clClass* TheClass )
 */
 bool clHeaderProcessor::ParseClassBody( clClass* TheClass )
 {
-   int NestingLevel = 1;
+	int NestingLevel = 1;
 
-   bool ClassHasBody = false;
-   bool FirstLine = true;
+	bool ClassHasBody = false;
+	bool FirstLine = true;
 
-   while ( GetNextLine( Line ) )
-   {
-      if ( SkipComments() ) { continue; }
+	while ( GetNextLine( Line ) )
+	{
+		if ( SkipComments() ) { continue; }
 
-//      if ( CheckClassAttributes( TheClass ) ) { continue; }
+		if ( FindCharOutOfBraces( Line, '{' ) && !FirstLine ) { NestingLevel++; }
 
-      if ( FindCharOutOfBraces( Line, '{' ) && !FirstLine ) { NestingLevel++; }
+		if ( FindCharOutOfBraces( Line, '}' ) ) { NestingLevel--; }
 
-      if ( FindCharOutOfBraces( Line, '}' ) ) { NestingLevel--; }
+		FirstLine = false;
 
-      FirstLine = false;
+		if ( ClassHasBody && ( NestingLevel == 0 ) ) { break; }
 
-      if ( ClassHasBody && ( NestingLevel == 0 ) ) { break; }
+		// check if we are inside the declaration
+		if ( NestingLevel != 1 ) { continue; }
 
-      // check if we are inside the declaration
-      if ( NestingLevel != 1 ) { continue; }
+		ClassHasBody = true;
 
-      ClassHasBody = true;
+		if ( SaveAccessModifier( Line ) ) { continue; }
 
-      if ( SaveAccessModifier( Line ) ) { continue; }
+		if ( Line.find( "nativefield " ) != -1 ) // it's a field
+		{
+			// if (!ParseClassField(TheClass))
+			clField Field;
+			string Error = Field.FromString( Line );
 
-      if ( Line.find( "nativefield " ) != -1 ) // it's a field
-      {
-//       if (!ParseClassField(TheClass))
-         clField Field;
-         string Error = Field.FromString( Line );
+			TheClass->AddFieldA( CurrentModifier, Field );
+			continue;
+		}
 
-         TheClass->AddFieldA( CurrentModifier, Field );
-         continue;
-      }
+		if ( IsPropertyDescriptionLine( Line ) ) // it is a property
+		{
+			clProperty prop;
+			string ErrorCode = prop.FromString( Line );
 
-      if ( IsPropertyDescriptionLine( Line ) ) // it is a property
-      {
-         clProperty prop;
-         string ErrorCode = prop.FromString( Line );
+			if ( ErrorCode != "" )
+			{
+				FLastError  = string( "Class name: " ) + TheClass->FClassName + string( "\n" );
+				FLastError += string( "Error parsing property descriptor, line: \n" ) + Line;
 
-         if ( ErrorCode != "" )
-         {
-            FLastError  = string( "Class name: " ) + TheClass->FClassName + string( "\n" );
-            FLastError += string( "Error parsing property descriptor, line: \n" ) + Line;
+				return false;
+			}
 
-            return false;
-         }
+			TheClass->AddProperty( prop );
+			continue;
+		}
 
-         TheClass->AddProperty( prop );
-         continue;
-      }
+		if ( !ParseMethodProto( TheClass ) ) { return false; }
+	}
 
-      if ( !ParseMethodProto( TheClass ) ) { return false; }
-   }
+	FPackage->FClasses[TheClass->FClassName] = *TheClass;
 
-   FPackage->FClasses[TheClass->FClassName] = *TheClass;
+	FDatabase->AddClass( &( FPackage->FClasses[TheClass->FClassName] ) );
 
-   FDatabase->AddClass( &( FPackage->FClasses[TheClass->FClassName] ) );
-
-   return true;
+	return true;
 }

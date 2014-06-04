@@ -79,8 +79,6 @@ void clPackage::CreatePackageDirectories()
 {
    // statistics
    CreateDirsPhys( FPackageOutDirectory + string( "/" ) + StatisticsDirName );
-   // serialization
-   CreateDirsPhys( FPackageOutDirectory + string( "/" ) + SerializationDirName );
    // script export
    CreateDirsPhys( FPackageOutDirectory + string( "/" ) + ScriptDirName );
    // native registration
@@ -91,7 +89,7 @@ void clPackage::CreatePackageDirectories()
 
 string clPackage::GetScriptExportDir() const
 {
-   return FPackageOutDirectory + "/" + ScriptDirName;
+	return FPackageOutDirectory + "/" + ScriptDirName;
 }
 
 void clPackage::GenerateStuff()
@@ -115,49 +113,52 @@ void clPackage::GenerateStuff()
 
 void clPackage::GenerateStatistics()
 {
-   string Dir = FPackageOutDirectory + string( "/" ) + StatisticsDirName;
+	string Dir = FPackageOutDirectory + string( "/" ) + StatisticsDirName;
 
-   DumpPackageStats( Dir + string( "/Debug_PackageStats.txt" ) );
+	DumpPackageStats( Dir + string( "/Debug_PackageStats.txt" ) );
 
-   buffered_stream OutList( string( Dir + string( "/Package1_ClassesList.Test" ) ).c_str() );
-   GenerateClassesList( OutList );
-   OutList.write();
+	buffered_stream OutList( string( Dir + string( "/Package1_ClassesList.Test" ) ).c_str() );
+	GenerateClassesList( OutList );
+	OutList.write();
 }
 
 vector<string> StdSerializationHeaders;
 
 void clPackage::GenerateEnumConverterHeaders( const string& FileName )
 {
-   buffered_stream Out( FileName.c_str() );
-   string IncludeGuard = string( "__" ) + FPackageName + string( "__EnumConversions__h__included__" );
+	buffered_stream Out( FileName.c_str() );
 
-   // std include guard
-   Out << "#ifndef " << IncludeGuard << endl;
-   Out << "#define " << IncludeGuard << endl;
+	string IncludeGuard = string( "__" ) + FPackageName + string( "__EnumConversions__h__included__" );
 
-   Out << endl << "#include \"LString.h\"" << endl << endl;
+	// std include guard
+	Out << "#ifndef " << IncludeGuard << endl;
+	Out << "#define " << IncludeGuard << endl;
 
-   // forward definitions and function prototypes
+	// forward definitions and function prototypes
 
-   if ( FEnums.size() > 0 )
-   {
-      Out << endl;
+	if ( FEnums.size() > 0 )
+	{
+		Out << endl << "#include \"LString.h\"" << endl << endl;
 
-      for ( size_t i = 0 ; i < FEnums.size() ; i++ )
-      {
-			// for C++11 we may use forward defs
-//         Out << "enum " << FEnums[i].FEnumName << ";" << endl << endl;
-         Out << "#include \"" << FEnums[i].FDeclaredIn << "\"" << endl << endl;
+		Out << endl;
 
-         FEnums[i].GenerateConverterHeaders( Out );
-         Out << endl;
-      }
+		for ( size_t i = 0 ; i < FEnums.size() ; i++ )
+		{
+			if(FEnums[i].FExported)
+			{
+				// for C++11 we may use forward defs
+				// Out << "enum " << FEnums[i].FEnumName << ";" << endl << endl;
+				Out << "#include \"" << FEnums[i].FDeclaredIn << "\"" << endl << endl;
 
-      Out << endl;
-   }
+				FEnums[i].GenerateConverterHeaders( Out );
+				Out << endl;
+				Out << endl;
+			}
+		}
+	}
 
-   // end of std_include_guard
-   Out << "#endif" << "  // " << IncludeGuard << endl;
+	// end of std_include_guard
+	Out << "#endif" << "  // " << IncludeGuard << endl;
 }
 
 LString clPackage::GetEnumConvertersIncludeFile() const
@@ -167,70 +168,85 @@ LString clPackage::GetEnumConvertersIncludeFile() const
 
 void clPackage::GenerateEnumConverters( const string& FileNameBase )
 {
-   buffered_stream Out( string( FileNameBase + string( ".cpp" ) ).c_str() );
+	buffered_stream Out( string( FileNameBase + string( ".cpp" ) ).c_str() );
 
-   Out << "#include \"Generated/" << GetEnumConvertersIncludeFile() << "\"" << endl;
+	Out << "#include \"Generated/" << GetEnumConvertersIncludeFile() << "\"" << endl;
 
-   // include every file with type definitions and declare converters
+	// include every file with type definitions and declare converters
+	if ( FEnums.size() > 0 )
+	{
+		Out << endl;
 
-   if ( FEnums.size() > 0 )
-   {
-      Out << endl;
+		for ( size_t i = 0 ; i < FEnums.size() ; i++ )
+		{
+			if(FEnums[i].FExported)
+			{
+				// std::cout << "Enum gen(source): " << FEnums[i].FEnumName << std::endl;
+				// fflush(stdout);
 
-      for ( size_t i = 0 ; i < FEnums.size() ; i++ )
-      {
-         Out << "#include \"" << FEnums[i].FDeclaredIn << "\"" << endl << endl;
+				Out << "#include \"" << FEnums[i].FDeclaredIn << "\"" << endl << endl;
 
-         FEnums[i].GenerateToStringConverter( Out );
-         Out << endl;
-         FEnums[i].GenerateFromStringConverter( Out );
-         Out << endl;
-      }
-   }
+				// std::cout << "Enum gen(tostr): " << FEnums[i].FEnumName << std::endl;
+				// fflush(stdout);
+
+				FEnums[i].GenerateToStringConverter( Out );
+				Out << endl;
+
+				// std::cout << "Enum gen(fromstr): " << FEnums[i].FEnumName << std::endl;
+				// fflush(stdout);
+
+				FEnums[i].GenerateFromStringConverter( Out );
+				Out << endl;
+
+				// std::cout << "Enum gen(ok): " << FEnums[i].FEnumName << std::endl;
+				// fflush(stdout);
+			}
+		}
+	}
 }
 
 // delete one of the PackageIncludeDirs from file name
 string clPackage::RemovePackageDirectoryFromFile( const LString& InName ) const
 {
-   for ( size_t i = 0 ; i < FPackageInDirectories.size() ; i++ )
-   {
-      string Dir = FPackageInDirectories[i];
+	for ( size_t i = 0 ; i < FPackageInDirectories.size() ; i++ )
+	{
+		string Dir = FPackageInDirectories[i];
 
-      if ( InName.find( Dir ) != std::string::npos )
-      {
-         return TrimSpaces( InName.substr( Dir.length() + 1, InName.length() - 1 ) );
-      }
-   }
+		if ( InName.find( Dir ) != std::string::npos )
+		{
+			return TrimSpaces( InName.substr( Dir.length() + 1, InName.length() - 1 ) );
+		}
+	}
 
-   return InName;
+	return InName;
 }
 
 void clPackage::ParseHeaderFile( const string& FileName )
 {
-   clHeaderProcessor P;
+	clHeaderProcessor P;
 
-   P.FDatabase = FDatabase;
-   P.FPackage  = this;
+	P.FDatabase = FDatabase;
+	P.FPackage  = this;
 
-   P.IncFileName = RemovePackageDirectoryFromFile( FileName );
+	P.IncFileName = RemovePackageDirectoryFromFile( FileName );
 
-   if ( !P.ProcessFile( FileName ) )
-   {
-      cout << "Error parsing " << FileName << endl;
-      cout << P.FLastError << endl;
-      // some error
-      exit( 255 );
-   }
+	if ( !P.ProcessFile( FileName ) )
+	{
+		cout << "Error parsing " << FileName << endl;
+		cout << P.FLastError << endl;
+		// some error
+		exit( 255 );
+	}
 }
 
 string clPackage::CreateExportRegFileName( int Index ) const
 {
-   return FPackageOutDirectory + string( "/" ) + ExportDirName + string( "/ExpReg" ) + FPackageCPPPrefix + Int2Str( Index ) + ".cpp";
+	return FPackageOutDirectory + string( "/" ) + ExportDirName + string( "/ExpReg" ) + FPackageCPPPrefix + Int2Str( Index ) + ".cpp";
 }
 
 string clPackage::CreateExportRegFileNameWithoutPath( int Index ) const
 {
-   return string( "ExpReg" ) + FPackageCPPPrefix + Int2Str( Index ) + ".cpp";
+	return string( "ExpReg" ) + FPackageCPPPrefix + Int2Str( Index ) + ".cpp";
 }
 
 // write some stuff to shut up stupid WhatsNew/Scheduler tool
@@ -245,16 +261,16 @@ void WriteFileFooter( buffered_stream& OutFile )
 
 void clPackage::EndExportsFile( buffered_stream* OutExportsI ) const
 {
-   if ( UseExportShortcuts )
-   {
-      // undefine utility macro
-      ( *OutExportsI ) << endl << "#undef REG_CLS_MTD" << endl;
-   }
+	if ( UseExportShortcuts )
+	{
+		// undefined utility macro
+		( *OutExportsI ) << endl << "#undef REG_CLS_MTD" << endl;
+	}
 
-   WriteFileFooter( *OutExportsI );
+	WriteFileFooter( *OutExportsI );
 
-   // delete file stream here
-   delete OutExportsI;
+	// delete file stream here
+	delete OutExportsI;
 }
 
 buffered_stream* clPackage::BeginExportsFile( const string& ExpFileName, const clStringsList& Includes, int Index ) const
@@ -294,26 +310,26 @@ buffered_stream* clPackage::BeginExportsFile( const string& ExpFileName, const c
 
 void clPackage::GenerateExportsHeader( buffered_stream& Out ) const
 {
-   Out.Include( "Exports_" + FPackageCPPName + string( ".h" ) );
-   Out << endl;
+	Out.Include( "Exports_" + FPackageCPPName + string( ".h" ) );
+	Out << endl;
 
-   Out.Include( "Core/Linker.h" );
-   Out.Include( "Core/RTTI/iStaticClass.h" );
-   Out.Include( "Environment.h" );
+	Out.Include( "Core/Linker.h" );
+	Out.Include( "Core/RTTI/iStaticClass.h" );
+	Out.Include( "Environment.h" );
 }
 
 void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
 {
-   Out.Include( "Generated/MethodBind.h" );
-   Out << endl;
-   Out.Include( "Core/Linker.h" );
-   Out.Include( "Core/RTTI/iStaticClass.h" );
-   Out.Include( "Core/RTTI/FieldBinding.h" );
-   Out.Include( "Core/RTTI/PropertyMacros.h" );
-   Out << endl;
+	Out.Include( "Generated/MethodBind.h" );
+	Out << endl;
+	Out.Include( "Core/Linker.h" );
+	Out.Include( "Core/RTTI/iStaticClass.h" );
+	Out.Include( "Core/RTTI/FieldBinding.h" );
+	Out.Include( "Core/RTTI/PropertyMacros.h" );
+	Out << endl;
 
-   Out.Include( "Core/VFS/ML.h" );
-   Out << endl;
+	Out.Include( "Core/VFS/ML.h" );
+	Out << endl;
 
 	Out.Include( "Generated/" + this->GetEnumConvertersIncludeFile() );
 	Out << endl;
