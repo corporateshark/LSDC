@@ -92,7 +92,7 @@ struct clProperty
    //////// Methods ////
 
    /// Internal parameter parser
-   void SetParam( const string& ParamName, const string& ParamValue );
+   bool SetParam( const string& ParamName, const string& ParamValue );
 
    /// Convert property description to string
    string ToString() const;

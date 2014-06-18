@@ -82,10 +82,11 @@ inline bool AssignPrm( string& _Name, const string& ActualName, const string& PN
    return false;
 }
 
-#define AssignP(_Name) AssignPrm(_Name, #_Name, ParamName, ParamValue);
+#define AssignP(_Name) res = res || AssignPrm(_Name, #_Name, ParamName, ParamValue);
 
-void clProperty::SetParam( const string& ParamName, const string& ParamValue )
+bool clProperty::SetParam( const string& ParamName, const string& ParamValue )
 {
+	bool res = false;
    AssignP( NetIndexedGetter )
    AssignP( NetIndexedSetter )
    AssignP( NetAddFunction )
@@ -108,8 +109,12 @@ void clProperty::SetParam( const string& ParamName, const string& ParamValue )
 
 	if ( ParamName == "Type" )
 	{
+		res = true;
 		SmartPointer = ( !ParamValue.empty() ) && ( ParamValue[ ParamValue.length() - 1 ] == '^' );
 	}
+
+	/// error in syntax ?
+	return res;
 }
 
 #undef AssignP
@@ -195,7 +200,10 @@ string clProperty::FromString( const string& P )
 
 //      if ( _Name == "Name" ) { _Val = TrimQuotes( _Val ); }
 
-      SetParam( _Name, _Val );
+      if(!SetParam( _Name, _Val ))
+	{
+		return "Error in property syntax, parameter name = " + _Name;
+	}
    }
 
 	if ( SmartPointer )
