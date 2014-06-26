@@ -41,8 +41,14 @@ public:
    /// Generate code for every loaded package
    void GenerateStuff();
 
+   /// Generate code for single package
+   void GenerateStuffForPackage(const std::string& PkgName);
+	
    /// Dump all the debug information about loaded packages, their dependancies etc.
    void GenerateStatistics();
+
+   /// Reallocate the inheritance cache
+   void AllocateInheritanceCache();
 
 public:
    void LoadPropertyMacros();

@@ -35,6 +35,9 @@ bool DumpStatistics = true;
 /// Declare the list of package directories to be processed
 vector<string> PackageInDirs;
 
+/// The package to be processed (if not empty, then only this package is processed)
+string OnlyPackage = "";
+
 void Help()
 {
    cout << "LSDC [-v|-s] [-stats] [-log] [-no-methods] -p <path> [-p <path>...] [--exclude <filename>...]" << endl;
@@ -190,6 +193,17 @@ void ProcessCommandLine( int argc, char** argv )
 
          exit( 0 );
       }
+      else if ( OptionName == "--onlypackage" || OptionName == "-op")
+      {
+		  CheckArgs( i + 1, argc, "Package Name expected for option --onlypackage" );
+		  string Pkg = string( argv[i+1] );
+         // store the "only" package
+		  OnlyPackage = Pkg;
+
+		  if ( Verbose ) cout << "Generating code only for Package named \"" << Pkg << "\" " << endl;
+		  
+		  i++;
+      }
       else if ( OptionName == "-p" || OptionName == "--package" )
       {
          CheckArgs( i + 1, argc, "Package directory name expected for option --package" );
@@ -240,14 +254,22 @@ int main( int argc, char** argv )
 
    // TODO : debug only, reads a single package
    if ( PackageInDirs.empty() ) { PackageInDirs.push_back( "../../Src" ); }
-
+	
    // Read each specified package
    for ( size_t i = 0; i != PackageInDirs.size(); ++i )
    {
       DB.ProcessPackageDirectory( PackageInDirs[i] );
    }
 
-   DB.GenerateStuff();
+	if(OnlyPackage.empty())
+	{
+		// process all packages
+		DB.GenerateStuff();
+	} else
+	{
+		// process single package [useful for non-destructive update of a single package]
+		DB.GenerateStuffForPackage(OnlyPackage);
+	}
 
    // statistics, if required
    if ( DumpStatistics ) { DB.GenerateStatistics(); }

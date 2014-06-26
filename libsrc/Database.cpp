@@ -147,19 +147,40 @@ void clDatabase::SetCacheValue( int Class, int Base, char Value )
    InheritanceCache[ Index ] = Value;
 }
 
-void clDatabase::GenerateStuff()
+void clDatabase::AllocateInheritanceCache()
 {
-   // preallocate inheritance cache
-   int Size = GlobalClassesList.size() * GlobalClassesList.size();
-
+    // preallocate inheritance cache
+	int Size = GlobalClassesList.size() * GlobalClassesList.size();
+	
 	if ( Verbose )
 	{
-	   cout << "Allocating " << Size << " bytes for inheritance cache (" << GlobalClassesList.size() << " classes in global list)" << endl;
+		cout << "Allocating " << Size << " bytes for inheritance cache (" << GlobalClassesList.size() << " classes in global list)" << endl;
 	}
+	
+	InheritanceCache = new char[ Size ];
+	
+	for ( int i = 0; i != Size; i++ ) { InheritanceCache[i] = CACHE_NONE; }
+}
 
-   InheritanceCache = new char[ Size ];
+void clDatabase::GenerateStuffForPackage(const std::string& PkgName)
+{
+	AllocateInheritanceCache();
+	for ( size_t i = 0 ; i < FPackages.size() ; i++ )
+	{
+		// don't generate anything for packages without setup scripts,
+		// just display a warning instead
+		if ( FPackages[i]->FPackageName == PkgName )
+		{
+			cout << "Generating package: " << FPackages[i]->FPackageName << endl;
+			FPackages[i]->GenerateStuff();
+			break;
+		}
+	}
+}
 
-   for ( int i = 0; i != Size; i++ ) { InheritanceCache[i] = CACHE_NONE; }
+void clDatabase::GenerateStuff()
+{
+	AllocateInheritanceCache();
 
    for ( size_t i = 0 ; i < FPackages.size() ; i++ )
    {
