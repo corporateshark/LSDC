@@ -197,10 +197,15 @@ void clEnum::GenerateFromStringConverter( buffered_stream& Out ) const
 
 		Out << "\tif (Str == \"" << FItems[i].FItemName << "\"";
 
-		// optional name stripping
-		Out << " || Str == \"" << FItems[i].GetStrippedName(FEnumName);
+		LString StrippedName = FItems[i].GetStrippedName(FEnumName);
 
-		Out << "\")" << endl;
+		if ( StrippedName != FItems[i].FItemName )
+		{
+			// optional name stripping
+			Out << " || Str == \"" << StrippedName << "\"";
+		}
+
+		Out << ")" << endl;
 
 		Out << "\t{" << endl;
 
