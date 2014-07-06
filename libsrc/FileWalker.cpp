@@ -119,7 +119,7 @@ void FileWalker::Scan( const string& dirName )
       exit( 255 );
    }
 
-   while ( de = readdir( d ) )
+   while (( de = readdir( d ) ))
    {
       string dname( de->d_name );
 

@@ -823,7 +823,7 @@ string clProperty::GetBinderMacro( bool IsArray, bool IsScalar, bool Accessor, b
 		res += Conv;
 	}
 
-	if ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor) || NeedType )
+	if ( ( !IsArray && ((!IsScalar && !EmptyFlag && Load) || Accessor) ) || NeedType )
 	{
 		// HACK with strings
 		if(Type == "string")
