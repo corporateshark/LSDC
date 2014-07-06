@@ -128,10 +128,7 @@ void OpcodeGenerator::write_opcode_mappings( const string& fname )
 {
    // 1. header file
    ofstream f_h( string( out_dir + "\\" + fname + ".h" ).c_str() );
-   /*
-      f_h << "#ifndef __" << fname << "__h__included__" << endl;
-      f_h << "#define __" << fname << "__h__included__" << endl << endl;
-   */
+ 
    f_h << endl << endl;
 
    f_h << "// LinderScript Virtual Machine Opcodes" << endl;

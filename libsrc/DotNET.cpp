@@ -36,8 +36,7 @@ void clPackage::GenerateDotNETWrappers()
 	Out.WriteDoxygenHeader( NETHeaderName, ".NET wrappers header" );
 
    // some header
-   Out << "#ifndef __" << FPackageNetName << "_h__included__" << endl;
-   Out << "#define __" << FPackageNetName << "_h__included__" << endl << endl;
+   Out << "#pragma once" << endl;
 
    Out << "// Disable the warning caused by inappropriate 'override' flags for some methods";
    Out.endl(); // << endl;
@@ -150,7 +149,6 @@ void clPackage::GenerateDotNETWrappers()
    Out << endl << endl;
    Out << "}  // namespace LinderdaumNET" << endl;
    Out << endl << endl;
-   Out << "#endif  // #ifndef " << FPackageNetName << "_Included" << endl;
 
 // Out.write(); -- this is done automatically in the destructor
 

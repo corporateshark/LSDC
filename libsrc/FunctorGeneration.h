@@ -18,8 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define File_Head "#ifndef _Functors_\n"\
-"#define _Functors_\n\n"\
+#define File_Head "#pragma once\n"\
 "#include <memory>\n\n"\
 "#include \"Utils/TypeLists.h\"\n\n"\
 "#include \"Platform/Platform.h\"\n\n"\
@@ -31,7 +30,6 @@
 
 #define File_End "   }\n"\
 "}\n\n"\
-"#endif\n"
 
 using namespace std;
 

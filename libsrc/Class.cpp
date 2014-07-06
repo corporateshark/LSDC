@@ -965,8 +965,7 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
    }
 
    Stub << endl;
-   Stub << "#ifndef _" << FClassName << "_Tunneller_" << endl;
-   Stub << "#define _" << FClassName << "_Tunneller_" << endl;
+   Stub << "#pragma once" << endl;
    Stub << endl;
    Stub.Include( FDeclaredIn );
    Stub << endl;
@@ -1006,8 +1005,6 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
    Stub << "};" << endl;
    Stub << endl;
    Stub << "#endif // _DISABLE_TUNNELLERS_" << endl;
-   Stub << endl;
-   Stub << "#endif" << endl;
    Stub << endl;
    Stub << "/*" << endl;
    Stub << " * " << LSDCDate << endl;
