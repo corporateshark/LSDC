@@ -2,11 +2,8 @@
 
 import os
 
-#del /q Out/liblsdc.a
+if not os.path.exists( "out" ): os.makedirs( "out" )
 
-if not os.path.exists( "Out" ): os.makedirs( "Out" )
-if os.path.exists( "Out/liblsdc.a" ): os.remove( "Out/liblsdc.a" )
-
-os.system("make -j4 lsdclib -f Makefile.lib")
-os.system("make -j4 lsdctest -f Makefile.test")
-os.system("make -j4 lsdc -f Makefile.lsdc")
+os.system("make -j4 -B lsdclib -f Makefile.lib")
+os.system("make -j4 -B lsdctest -f Makefile.test")
+os.system("make -j4 -B lsdc -f Makefile.lsdc")
