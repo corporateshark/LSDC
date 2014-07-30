@@ -193,6 +193,13 @@ public:
 
    // 2D array
    char* InheritanceCache;
+	
+	/// Optional defines & management
+	mutable std::map<std::string, bool> FDefines;
+	
+	void Define(const std::string& Def);
+	void Undefine(const std::string& Def);
+	bool IsDefined(const std::string& Def) const;
 };
 
 #endif

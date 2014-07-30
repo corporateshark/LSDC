@@ -42,6 +42,11 @@ const string PACKAGE_GEN_ENUMS          = "GENERATE_ENUM_EXPORTS(";
 const string PACKAGE_GEN_CONSTS         = "GENERATE_CONST_EXPORTS(";
 const string PACKAGE_GEN_NET_EXPORT     = "GENERATE_NET_EXPORT(";
 
+// optional defines (non-preprocessor based) are specified in the command line or in the LSDC options
+// The following markers try to check if the code between them should be processed
+const string LSDC_OPTIONAL_BEGIN = "LSDC_OPTIONAL_BEGIN(";
+const string LSDC_OPTIONAL_END   = "LSDC_OPTIONAL_END(";
+
 #pragma region Inline parsing helper functions
 
 /// Что-то про кривые скобки

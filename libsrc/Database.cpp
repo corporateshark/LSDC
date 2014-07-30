@@ -18,6 +18,23 @@ clDatabase::~clDatabase()
    delete( InheritanceCache );
 }
 
+void clDatabase::Define(const std::string& Def)
+{
+	FDefines[Def] = true;
+}
+
+void clDatabase::Undefine(const std::string& Def)
+{
+	FDefines[Def] = false;
+}
+
+bool clDatabase::IsDefined(const std::string& Def) const
+{
+	if(FDefines.count(Def) > 0) { return FDefines[Def]; }
+	
+	return false;
+}
+
 string clDatabase::ExpandMacro(const LString& MacroString)
 {
 	if(!DoExpandMacros) { return MacroString; }
