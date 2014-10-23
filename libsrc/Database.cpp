@@ -268,8 +268,7 @@ string clDatabase::GetRootestClassFor( const string& ClassName )
 
 clClass* clDatabase::GetClassPtr( const string& ClassName )
 {
-   for ( vector< clClass* >::const_iterator i = GlobalClassesList.begin();
-         i != GlobalClassesList.begin(); ++i )
+   for ( vector< clClass* >::const_iterator i = GlobalClassesList.begin(); i != GlobalClassesList.end(); ++i )
    {
       if ( ( *i )->FClassName == ClassName ) { return ( *i ); }
    }
