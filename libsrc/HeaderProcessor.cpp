@@ -432,7 +432,7 @@ bool clHeaderProcessor::ReadTillNextCurlyBracket()
    // remove trailing '{'
    size_t BracePos = Line.find( "{" );
 
-   int StoredPos = In.tellg();
+   std::streamoff StoredPos = In.tellg();
    int StoredLine = CurrentLine;
 
    while ( BracePos == -1 )
