@@ -324,6 +324,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << "template <" << ( ( Static ) ? "" : "class T" );
 	Out << ( ( Static ) ? "" : ", " ) << "typename ReturnType";
 	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
+	if ( ParamsCount > 0 ) Out << endl;
 	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
 	Out << ">" << endl;
    Out << "class clCapsuleParams" << ParamsCount << ( ( Static ) ? "_Func" : "_Method" ) << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" ) << ( ( SmartPtr ) ? "_SmartPtr" : "" ) << " : public iAsyncCapsule" << endl;
@@ -366,7 +367,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	// generate parameters' containers
 	for ( int i = 0; i != ParamsCount; i++ )
 	{
-		Out << "\ttypename TypeTraits< typename TypeTraits<P" << i << ">::ReferredType >::UnqualifiedType FP" << i << ";" << endl;
+		Out << "\tUNQ_TYPE(P" << i << ") FP" << i << ";" << endl;
 	}
 
    Out << "public:" << endl;
@@ -418,7 +419,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 		for(int i = 0 ; i < ParamsCount ; i++)
 		{
 			Out << "\t\tif ( Index == " << i << " )" << endl << "\t\t{" << endl;
-			Out << "\t\t\tFP" << i << " = *(typename TypeTraits< typename TypeTraits<P" << i << ">::ReferredType >::UnqualifiedType*)( TheParam->GetNativeBlock() );" << endl;
+			Out << "\t\t\tFP" << i << " = *( UNQ_TYPE(P" << i << ")* )( TheParam->GetNativeBlock() );" << endl;
 			Out << "\t\t\treturn true;" << endl;
 			Out << "\t\t}" << endl << endl;
 		}
@@ -461,20 +462,21 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	Out << "template <" << ( ( Static ) ? "" : "class T" );
 	Out << ( ( Static ) ? "" : ", " ) << "typename ReturnType";
 	Out << ( ( ParamsCount > 0 ) ? ", " : "" );
+	if ( ParamsCount > 0 ) Out << endl << MultiSpace( SpaceCount );
 	WriteItemList( Out, MultiSpace( SpaceCount ), "typename ", true, ParamsCount );
 	Out << ">" << endl;
-	Out << "inline clPtr<iAsyncCapsule> BindCapsule( ";
+	Out << "inline clPtr<iAsyncCapsule> BindCapsule( " << endl;
 	if ( Static )
 	{
-		Out << "ReturnType ( *FuncPtr )(";
+		Out << MultiSpace( 3 ) << "ReturnType ( *FuncPtr )(";
 
 		WriteItemList( Out, "", "", false, ParamsCount );
 
-		Out << ")";
+		Out << ")" << std::endl;
 	}
 	else
 	{
-		Out << "ReturnType ( T::*MethodPtr )(";
+		Out << MultiSpace( 3 ) << "ReturnType ( T::*MethodPtr )(";
 
 		WriteItemList( Out, "", "", false, ParamsCount );
 
@@ -485,19 +487,22 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 
 		if ( SmartPtr )
 		{
-			Out << ", const clPtr<T>& ObjectAddr";
+			Out << "," << endl;
+			Out << MultiSpace(3) << "const clPtr<T>& ObjectAddr";
 		}
 		else
 		{
-			Out << ", T* ObjectAddr";
+			Out << "," << endl;
+			Out << MultiSpace(3) << "T* ObjectAddr";
 		}
 	}
 	for ( int i = 0; i != ParamsCount; i++ )
 	{
-		Out << ", P" << i << " p" << i;
+		Out << "," << endl;
+		Out << MultiSpace(3) << "REF_TYPE(P" << i << ") p" << i;
 	}
 
-	Out << " )" << endl;
+	Out << endl << ")" << endl;
 
 	Out << "{" << endl;
 	Out << "	return new ";
@@ -545,7 +550,7 @@ void GenerateCapsules( std::ostream& Out, int NumParams )
    Out << "#include \"Platform.h\"" << endl;
    Out << "#include \"Core/RTTI/Parameters.h\"" << endl;
    Out << endl;
-   Out << "class iAsyncCapsule" << endl;
+   Out << "class iAsyncCapsule: public iIntrusiveCounter" << endl;
    Out << "{" << endl;
    Out << "public:" << endl;
    Out << "\t/// Run the method" << endl;
@@ -554,6 +559,8 @@ void GenerateCapsules( std::ostream& Out, int NumParams )
    Out << "\tvirtual bool SetParameter(int Index, iParameter* TheParam) { return false; }" << endl;
    Out << "};" << endl;
    Out << endl;
+	Out << "#define UNQ_TYPE(x) typename TypeTraits< typename TypeTraits<x>::ReferredType >::UnqualifiedType" << endl;
+	Out << "#define REF_TYPE(x) typename TypeTraits<x>::ReferredType" << endl;
 
    for ( int i = 0; i < NumParams + 1 ; i++ )
    {
@@ -585,6 +592,10 @@ void GenerateCapsules( std::ostream& Out, int NumParams )
 		GenerateCapsule( Out, false, i, true, true, true );
    }
 
+   Out << endl;
+
+	Out << "#undef UNQ_TYPE" << endl;
+	Out << "#undef REF_TYPE" << endl;
 
    Out << endl;
 }
