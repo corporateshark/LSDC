@@ -324,7 +324,7 @@ void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
 	Out.Include( "Core/RTTI/PropertyMacros.h" );
 	Out << endl;
 
-	Out.Include( "Core/VFS/ML.h" );
+	Out.Include( "Core/VFS/XLML.h" );
 	Out << endl;
 
 	Out.Include( "Generated/" + this->GetEnumConvertersIncludeFile() );

@@ -228,7 +228,7 @@ void Banner()
 {
    cout << "LinderScript Database Compiler" << endl;
    cout << "Version " << LSDCVersion << " (" << LSDCDate << ")" << endl;
-   cout << "(C) Sergey Kosarevsky, 2005-2014" << endl;
+   cout << "(C) Sergey Kosarevsky, 2005-2015" << endl;
    cout << "(C) Viktor Latypov, 2007-2014" << endl << endl;
 }
 

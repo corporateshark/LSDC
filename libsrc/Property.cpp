@@ -868,9 +868,9 @@ string clProperty::GetLoadSaveDeclarations() const
 
 	// Binary loader/saver
 	// Loader
-	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
+//	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,   true, GetFromStringConverter() ) );
 	// Saver
-	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
+//	res += FDatabase->ExpandMacro( std::string("BIN_") + GetBinderMacro( isArray, isScalar, false,  false, GetToStringConverter() ) );
 
 	if(!isArray)
 	{
