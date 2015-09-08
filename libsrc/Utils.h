@@ -41,7 +41,7 @@ extern bool Verbose;
 const char TAB_CHAR = 0x9;
 
 const string EngineVersion = "0.6.36";
-const string LSDCVersion = "0.9.63";
+const string LSDCVersion = "0.9.64";
 const string LSDCDate = __DATE__;
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 

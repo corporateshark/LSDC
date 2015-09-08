@@ -228,6 +228,7 @@ void clDatabase::GenerateStatistics()
 // _TRACE("Dumping converter table contents")
    DumpNETTypeMap( "Debug_NETTypes.list" );
    DumpStringConverters( "Debug_StringCvt.list" );
+   DumpXMLSchema( "LinderdaumSchema.xml" );
 }
 
 bool clDatabase::IsWrappedClass( const string& ClassName )
@@ -833,6 +834,61 @@ void clDatabase::DumpStringConverters( const string& fname )
    }
 
    f.close();
+}
+
+std::string ConvertPropTypeToXMLSchemaPropType( const std::string Type )
+{
+	if ( Type == "std::vector<std::string>" || Type == "std::vector<LString>" ) return "List<string>";
+
+	return Type;
+}
+
+void clDatabase::DumpXMLSchema( const string& fname )
+{
+	ofstream f( fname.c_str() );
+
+	f << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl;
+	f << "<ClassDB xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" << endl;
+
+	std::string Prefix = MultiSpace(1);
+
+	f << Prefix << "<Classes>" << endl;
+
+	for ( const auto& Package : FPackages )
+	{
+		for ( const auto& Class : Package->FClasses )
+		{
+			std::string Prefix = MultiSpace(2);
+
+			f << Prefix << "<Metaclass>" << endl;
+			f << Prefix << " <Name>" << Class.second.FClassName << "</Name>" << endl;
+
+			if ( !Class.second.FProperties.empty() )
+			{
+				f << Prefix << " <Properties>" << endl;
+
+				for ( const auto& Prop : Class.second.FProperties )
+				{
+					std::string Prefix = MultiSpace(4);
+
+					f << Prefix << "<PropertyDesc>" << endl;
+					f << Prefix << " <Name>" << Prop.Name << "</Name>" << endl;
+					f << Prefix << " <TypeName>" << ConvertPropTypeToXMLSchemaPropType(Prop.Type) << "</TypeName>" << endl;
+					f << Prefix << "</PropertyDesc>" << endl;
+				}
+
+				f << Prefix << " </Properties>" << endl;
+			}
+
+			f << Prefix << "</Metaclass>" << endl;
+		}
+	}
+
+	f << "</Classes>" << endl;
+
+	f << "</ClassDB>" << endl;
+
+	f.close();
 }
 
 void clDatabase::DumpNETTypeMap( const string& fname )

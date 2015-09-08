@@ -161,6 +161,9 @@ public:
 
 #pragma endregion
 
+	/// Dump XML schema
+	void DumpXMLSchema( const string& fname );
+
 public:
    /// ToString-conversion functions for the types
    map<string, string> ToStringConverters;
