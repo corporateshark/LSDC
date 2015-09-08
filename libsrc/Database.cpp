@@ -838,7 +838,7 @@ void clDatabase::DumpStringConverters( const string& fname )
 
 std::string ConvertPropTypeToXMLSchemaPropType( const std::string Type )
 {
-	if ( Type == "std::vector<std::string>" || Type == "std::vector<LString>" ) return "List<string>";
+	if ( Type == "std::vector<std::string>" || Type == "std::vector<LString>" ) return "List&lt;string&gt;";
 
 	return Type;
 }
