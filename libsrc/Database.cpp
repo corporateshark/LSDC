@@ -840,6 +840,45 @@ std::string ConvertPropTypeToXMLSchemaPropType( const std::string Type )
 {
 	if ( Type == "std::vector<std::string>" || Type == "std::vector<LString>" ) return "List&lt;string&gt;";
 
+	if (Type == "LVector2" || Type == "vec2") { return "NetVec2"; }
+	if (Type == "LVector3" || Type == "vec3") { return "NetVec3"; }
+	if (Type == "LVector3i" || Type == "vec3i") { return "NetVec3i"; }
+	if (Type == "LVector4" || Type == "vec4") { return "NetVec4"; }
+
+	if (Type == "LQuaternion" || Type == "quat") { return "NetQuat"; }
+
+	if (Type == "LAABoundingBox") { return "NetAABoundingBox";  }
+	if (Type == "LSphere") { return "NetSphere"; }
+
+	if (Type == "LVolumeRenderMode") { return "int"; }
+	if (Type == "LVolumeRenderMaterial") { return "int"; }
+	if (Type == "LGradientsMode") { return "int"; }
+	if (Type == "LTransferFunctionMode") { return "int"; }
+
+	if (Type == "LEulerAngleSystem") { return "int"; }
+	if (Type == "LProjectionType") { return "int"; }
+
+	if (Type == "LClockState") { return "int"; }
+	if (Type == "LEaseMode") { return "int"; }
+	if (Type == "LClockState") { return "int"; }
+	if (Type == "LFillBehaviour") { return "int"; }
+	if (Type == "LHandoffBehaviour") { return "int"; }
+	if (Type == "LDepthFunc") { return "int"; }
+
+		// tile layout
+	if (Type == "LPikeType") { return "int"; }
+
+	if (Type == "LBufferUsageFlag") { return "int"; }
+
+	if (Type == "LMatrix3" || Type == "mtx3" || Type == "mat3") { return "NetMtx3"; }
+	if (Type == "LMatrix4" || Type == "mtx4" || Type == "mat4") { return "NetMtx4"; }
+
+	if (Type == "LBitmapFormat" || Type == "LTextureType" || Type == "LPrimitiveType" || Type == "LRenderMode" || Type == "LEvent" || Type == "LLogLevel" || Type == "LBitmapBlendMode" || Type == "LMaterialBlendMode" || Type == "LMaterialShading" || Type == "LMaterialNormal") { return "int"; }
+	if (Type == "LStringBuffer") { return "string"; }
+	if (Type == "LString") { return "string"; }
+
+	if (Type == "int" || Type == "Lint" || Type == "Lint64" || Type == "Luint64" || Type == "size_t") { return "int"; }
+
 	return Type;
 }
 
@@ -853,15 +892,69 @@ void clDatabase::DumpXMLSchema( const string& fname )
 	std::string Prefix = MultiSpace(1);
 
 	f << Prefix << "<Classes>" << endl;
-
+//	GetR
 	for ( const auto& Package : FPackages )
 	{
+		std::vector<std::string> SortedClasses;
+
+		// 1. fetch exported class list
+		for (const auto & Class : Package->FClasses)
+		{
+			string name = Class.second.FClassName;
+
+			if (!name.empty() && Class.second.FNetExportable)
+			{
+				Class.second.CollectBaseClasses(SortedClasses);
+			}
+		}
+		// 2. now generate C# metainfo for each class
+		for (size_t j = 0; j < SortedClasses.size(); j++)
+		{
+			clClass* Class = this->GetClassPtr(SortedClasses[j]);
+
+			if (Class->FNetExportable)
+			{
+				/// Out << "\tref class " << Class->FClassName << ";" << endl;
+
+				std::string Prefix = MultiSpace(2);
+				f << Prefix << "<Metaclass>" << endl;
+				f << Prefix << " <Name>" << Class->FClassName << "</Name>" << endl;
+				if (!Class->FBaseClasses.empty())
+					f << Prefix << " <InheritsFrom>" << Class->FBaseClasses[0].FBaseClassName << "</InheritsFrom>" << std::endl;
+				if (!Class->FProperties.empty())
+				{
+					f << Prefix << " <Properties>" << endl;
+
+					for (const auto& Prop : Class->FProperties)
+					{
+						std::string Prefix = MultiSpace(4);
+
+						std::string InnerType = ConvertPropTypeToXMLSchemaPropType(Prop.Type);
+
+						// Method "this->GetAppropriateNetTypeForParameter(Prop.Type)" won't do since it is a C++/CLI
+
+						std::string NetPropType = (Prop.IndexType == "int") ? (std::string("List&lt;") + InnerType + "&gt;") : InnerType;
+
+						f << Prefix << "<PropertyDesc>" << endl;
+						f << Prefix << " <Name>" << Prop.Name << "</Name>" << endl;
+						f << Prefix << " <TypeName>" << NetPropType << "</TypeName>" << endl;
+						f << Prefix << "</PropertyDesc>" << endl;
+					}
+
+					f << Prefix << " </Properties>" << endl;
+				}
+
+				f << Prefix << "</Metaclass>" << endl;
+			}
+		}
+
+		/*
 		for ( const auto& Class : Package->FClasses )
 		{
 			std::string Prefix = MultiSpace(2);
-
 			f << Prefix << "<Metaclass>" << endl;
 			f << Prefix << " <Name>" << Class.second.FClassName << "</Name>" << endl;
+			f << Prefix << " <InheritsFrom>" << Class.second.FBaseClasses[0].FBaseClassName << "</InheritsFrom>" << std::endl;
 
 			if ( !Class.second.FProperties.empty() )
 			{
@@ -871,9 +964,15 @@ void clDatabase::DumpXMLSchema( const string& fname )
 				{
 					std::string Prefix = MultiSpace(4);
 
+					std::string InnerType = ConvertPropTypeToXMLSchemaPropType(Prop.Type);
+
+					// Method "this->GetAppropriateNetTypeForParameter(Prop.Type)" won't do since it is a C++/CLI
+
+					std::string NetPropType = (Prop.IndexType == "int") ? (std::string("List&lt;") + InnerType + "&gt;") : InnerType;
+
 					f << Prefix << "<PropertyDesc>" << endl;
 					f << Prefix << " <Name>" << Prop.Name << "</Name>" << endl;
-					f << Prefix << " <TypeName>" << ConvertPropTypeToXMLSchemaPropType(Prop.Type) << "</TypeName>" << endl;
+					f << Prefix << " <TypeName>" << NetPropType << "</TypeName>" << endl;
 					f << Prefix << "</PropertyDesc>" << endl;
 				}
 
@@ -881,7 +980,7 @@ void clDatabase::DumpXMLSchema( const string& fname )
 			}
 
 			f << Prefix << "</Metaclass>" << endl;
-		}
+		}*/
 	}
 
 	f << "</Classes>" << endl;
