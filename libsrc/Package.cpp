@@ -312,6 +312,13 @@ void clPackage::GenerateExportsHeader( buffered_stream& Out ) const
 	Out.Include( "Core/Linker.h" );
 	Out.Include( "Core/RTTI/iStaticClass.h" );
 	Out.Include( "Environment.h" );
+
+	if ( !FPackageCustomIncludeName.empty() )
+	{
+		Out << endl;
+	   Out << "// Custom include file" << endl;
+	   Out << "#include \"" << FPackageCustomIncludeName << "\"" << endl;
+	}
 }
 
 void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
