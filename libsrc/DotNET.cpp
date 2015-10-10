@@ -641,6 +641,12 @@ bool clMethod::GenerateMethodDotNETImpl( buffered_stream& Out ) const
       Out << "\t" << ConversionCode << ";";
       Out.endl(); // << endl;
 
+      if(FDatabase->IsSmartPointer(ArgType))
+      {
+           Out << "\t" << ParamVarName << "->IncRefCount();" << ";";
+           Out.endl();
+      }
+
       /// Out-parameters handling
 //      if(FDatabase->IsReference(FArgTypes[i]) && !FDatabase->IsConstType(FArgTypes[i])) { LocalParamList += string("*"); }
 
@@ -723,9 +729,11 @@ bool clMethod::GenerateMethodDotNETImpl( buffered_stream& Out ) const
    // 7. If there are any out parameters, convert them back
    for ( size_t i = 0 ; i != FArgNames.size() ; i++ )
    {
+      string ParamVarName = string( "Param" ) + Int2Str( i );
+      string ArgType = TrimSpaces( FDatabase->StripTypeName( TrimSpaces( FArgTypes[i] ) ) );
+
       if ( FDatabase->IsOutParameter( FArgTypes[i] ) )
       {
-         string ArgType = TrimSpaces( FDatabase->StripTypeName( TrimSpaces( FArgTypes[i] ) ) );
 
          string ConvCode = FDatabase->GetNativeToNetConversion( string( "Param" ) + Int2Str( i ), ArgType );
 
@@ -737,6 +745,12 @@ bool clMethod::GenerateMethodDotNETImpl( buffered_stream& Out ) const
 
          Out << "\t" << FArgNames[i] << " = " << ConvCode << ";";
          Out.endl(); // << endl;
+      }
+
+      if(FDatabase->IsSmartPointer(ArgType))
+      {
+           Out << "\t" << ParamVarName << "->DecRefCount();" << ";";
+           Out.endl();
       }
    }
 
