@@ -359,7 +359,7 @@ void clPackage::GenerateExportsH( buffered_stream& Out ) const
 void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseClass, const string& BaseClassExports,
                                        const clStringsList& Includes, const clStringsList& ClassNames ) const
 {
-   const int MaxClassesInExport = 50;
+   const int MaxClassesInExport = 200;
 
    int ExportsIndex          = 1;
    int ClassesExportedInFile = 0;
@@ -474,12 +474,13 @@ void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseC
    Out << "   // NumClasses : " << RegisteredClasses.size() << endl;
 
    Out << "#if !defined(_DISABLE_METHODS_) && !defined(_DISABLE_TUNNELLERS)" << endl;
-
+/*
    for ( size_t i = 0 ; i < RegisteredClasses.size() ; i++ )
    {
       Out << "   Env->Linker->FindStaticClass( \"" << RegisteredClasses[i] << "\" )->BuildVirtualTables();" << endl;
    }
-
+*/
+   Out << "   Env->Linker->RebuildVirtualTables();" << endl;
    Out << "#endif // _DISABLE_METHODS_" << endl;
 
    Out << "}" << endl;
