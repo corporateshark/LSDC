@@ -29,7 +29,7 @@ public:
 
    virtual void ProcessDirectory( const string& dirName, const string& shortName )
    {
-      if ( shortName != ".svn" && shortName != ".cvs" )
+      if ( shortName != ".svn" && !IsFileExcluded( shortName) )
       {
          Scan( dirName );
       }
