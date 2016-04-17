@@ -40,7 +40,7 @@ string OnlyPackage = "";
 
 void Help()
 {
-   cout << "LSDC [-v|-s] [-stats] [-log] [-no-methods] -p <path> [-p <path>...] [--exclude <filename>...]" << endl;
+   cout << "LSDC [-v|-s] [-stats] [-log] [-no-methods] -p <path> [-p <path>...] [--exclude <filename>...] [--exclude <dirname>...]" << endl;
    cout << "LSDC --generate-opcodes" << endl;
    cout << "LSDC --generate-functors" << endl;
    cout << "LSDC --generate-binders" << endl;
@@ -52,6 +52,7 @@ void Help()
    cout << " -no-methods --disable-method-export" << endl;
    cout << "             --no-export-shortcuts" << endl;
    cout << "             --exclude" << endl;
+   cout << "             --excludedir" << endl;
    cout << " -log        --enable-logging" << endl;
    cout << " -gen-op     --generate-opcodes" << endl;
    cout << " -gen-func   --generate-functors" << endl;
@@ -122,6 +123,14 @@ void ProcessCommandLine( int argc, char** argv )
          i++;
 
          ExcludeFile( argv[i] );
+      }
+      else if ( OptionName == "--excludedir" )
+      {
+         CheckArgs( i + 1, argc, "Expecting dir name to exclude" );
+
+         i++;
+
+         ExcludeDir( argv[i] );
       }
       else if ( OptionName == "--enable-logging" || OptionName == "-log" )
       {

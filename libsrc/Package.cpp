@@ -29,7 +29,7 @@ public:
 
    virtual void ProcessDirectory( const string& dirName, const string& shortName )
    {
-      if ( shortName != ".svn" && !IsFileExcluded( shortName) )
+      if ( !IsDirExcluded(shortName) )
       {
          Scan( dirName );
       }
@@ -473,7 +473,7 @@ void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseC
 
    Out << "   // NumClasses : " << RegisteredClasses.size() << endl;
 
-   Out << "#if !defined(_DISABLE_METHODS_) && !defined(_DISABLE_TUNNELLERS)" << endl;
+//   Out << "#if !defined(_DISABLE_METHODS_) && !defined(_DISABLE_TUNNELLERS)" << endl;
 /*
    for ( size_t i = 0 ; i < RegisteredClasses.size() ; i++ )
    {
@@ -481,7 +481,7 @@ void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseC
    }
 */
    Out << "   Env->Linker->RebuildVirtualTables();" << endl;
-   Out << "#endif // _DISABLE_METHODS_" << endl;
+//   Out << "#endif // _DISABLE_METHODS_" << endl;
 
    Out << "}" << endl;
 

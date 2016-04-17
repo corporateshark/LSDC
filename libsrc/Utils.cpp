@@ -266,6 +266,7 @@ string ReplaceAll( const string& s, char Src, char Dest )
 }
 
 std::vector<string> ExcludedFiles;
+std::vector<string> ExcludedDirs;
 
 void ExcludeFile( const string& Name )
 {
@@ -274,6 +275,16 @@ void ExcludeFile( const string& Name )
 	if ( Verbose )
 	{
 		std::cout << "Added exclude file: " << Name << std::endl;
+	}
+}
+
+void ExcludeDir( const string& Name )
+{
+	ExcludedDirs.push_back( Name );
+
+	if ( Verbose )
+	{
+		std::cout << "Added exclude dir: " << Name << std::endl;
 	}
 }
 
@@ -299,6 +310,24 @@ bool IsFileExcluded( const string& Name )
 			if ( Verbose )
 			{
 				std::cout << "Excluded file: " << Name << std::endl;
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool IsDirExcluded( const string& Name )
+{
+	for ( size_t i = 0 ; i != ExcludedDirs.size() ; i++ )
+	{
+		if ( Name == ExcludedDirs[i] )
+		{
+			if ( Verbose )
+			{
+				std::cout << "Excluded dir: " << Name << std::endl;
 			}
 
 			return true;
