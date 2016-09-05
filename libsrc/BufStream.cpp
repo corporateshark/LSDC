@@ -44,7 +44,8 @@ void buffered_stream::write()
    {
       if ( !CompareToReference( ReferenceFile.c_str() ) )
       {
-         ofstream f( ReferenceFile.c_str() );
+         ofstream f;
+			f.open( ReferenceFile.c_str(), FAppendToExistingFile ? (fstream::out | fstream::app) : (fstream::out) );
 
          for ( vector<string>::iterator i = ReferenceBuffer.begin() ; i != ReferenceBuffer.end() ; i++ )
          {

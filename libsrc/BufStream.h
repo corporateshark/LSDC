@@ -39,7 +39,8 @@ public:
       clear();
    }
 
-   buffered_stream( const char* ref_file )
+   buffered_stream( const char* ref_file, bool AppendToExistingFile = false )
+	: FAppendToExistingFile( AppendToExistingFile )
    {
       set_reference_file( ref_file );
       clear();
@@ -97,6 +98,11 @@ public:
    }
 
 	void WriteDoxygenHeader( const string& FileName, const string& Brief );
+
+
+private:
+   bool CompareToReference( const char* InFileName );
+
 private:
    /// in-mem contents buffer
    ostringstream Buffer;
@@ -105,8 +111,7 @@ private:
 
    vector<string> ReferenceBuffer;
 
-private:
-   bool CompareToReference( const char* InFileName );
+	bool FAppendToExistingFile;
 };
 
 #endif
