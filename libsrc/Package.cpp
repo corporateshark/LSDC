@@ -521,6 +521,15 @@ void clPackage::GenerateStubs( const string& BaseClass, const string& BaseClassE
    clStringsList     Includes;
    clStringsList     ClassNames;
 
+	if ( g_PackTunnellers )
+	{
+		// create empty header
+		const string StubFileName = this->FPackageName + "_Tunnellers.h";
+		buffered_stream Stub( (this->GetScriptExportDir() + "/" + StubFileName).c_str(), true );
+		Stub.WriteDoxygenHeader( StubFileName, "Tunnellers for package: " + this->FPackageName );
+		Stub << "#pragma once" << endl;
+	}
+
    for ( map<string, clClass>::const_iterator i = FClasses.begin(); i != FClasses.end(); ++i )
    {
       if ( InheritsFrom( i->second.FClassName, BaseClass ) )

@@ -69,8 +69,8 @@ void buffered_stream::WriteDoxygenHeader( const string& FileName, const string& 
 	( *this ) << " * \\brief " << Brief << ::endl;
 	( *this ) << " * \\version " << GetCurrentVersion() << ::endl;
 	( *this ) << " * \\date " << GetCurrentDate() << ::endl;
-	( *this ) << " * \\author Sergey Kosarevsky, 2005-2011" << ::endl;
-	( *this ) << " * \\author Viktor Latypov, 2007-2011" << ::endl;
+	( *this ) << " * \\author Sergey Kosarevsky, 2005-2016" << ::endl;
+	( *this ) << " * \\author Viktor Latypov, 2007-2016" << ::endl;
 	( *this ) << " * \\author support@linderdaum.com http://www.linderdaum.com" << ::endl;
 	( *this ) << " */" << ::endl << ::endl;
 }
