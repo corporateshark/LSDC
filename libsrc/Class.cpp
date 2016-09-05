@@ -276,7 +276,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
       }
    }
 
-   if ( EnableLogging )
+   if ( g_EnableLogging )
    {
       Stub << "         // Class: " << FClassName << endl;
    }
@@ -290,7 +290,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
 
          if ( j == AbstractMethods.end() )
          {
-            if ( ExportMethods && EnableLogging )
+            if ( g_ExportMethods && g_EnableLogging )
             {
                Stub << "            // Adding abstract: " << i->FMethodName << endl;
             }
@@ -305,7 +305,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
 
          if ( j != AbstractMethods.end() )
          {
-            if ( ExportMethods && EnableLogging )
+            if ( g_ExportMethods && g_EnableLogging )
             {
                Stub << "            // Overriding abstract: " << i->FMethodName << endl;
             }
@@ -327,7 +327,7 @@ bool clClass::IsAbstract( buffered_stream& Stub ) const
          i != AbstractMethods.end();
          ++i )
    {
-      if ( ExportMethods && EnableLogging )
+      if ( g_ExportMethods && g_EnableLogging )
       {
          Stub << "      // Abstract method: " << ( *i ) << endl;
       }
@@ -466,14 +466,14 @@ bool clClass::IsDerivedFromNativeBase() const
 
 void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) const
 {
-   if ( !FMethods.empty() && ExportMethods )
+   if ( !FMethods.empty() && g_ExportMethods )
    {
       // if FMethods.size() > this const, then we define a macro to reduce the code size
       const int MinNumOfMethodsForMacro = 3;
 
       bool WithMacro = static_cast<int>( FMethods.size() ) > MinNumOfMethodsForMacro;
 
-      if ( WithMacro  && UseExportShortcuts )
+      if ( WithMacro  && g_UseExportShortcuts )
       {
          Out << "   #define _RM__(Mtd) REG_CLS_MTD(" << FClassName << ",Mtd)" << endl;
       }
@@ -483,7 +483,7 @@ void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) co
          // static methods are also exported
          if ( /*(!i->FStatic) &&*/ ( i->FAccess == "public:" ) )
          {
-            if ( !UseExportShortcuts )
+            if ( !g_UseExportShortcuts )
             {
                // old code was the direct invocation
                Out << "   StaticClass->RegisterMethod( BindNativeMethod( &" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << "::" << ( i->FMethodName ) << ", \"" << ( i->FMethodName ) << "\" ) );" << endl;
@@ -504,7 +504,7 @@ void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) co
          }
       }
 
-      if ( WithMacro && UseExportShortcuts )
+      if ( WithMacro && g_UseExportShortcuts )
       {
          Out << "   #undef _RM__" << endl;
       }
@@ -599,9 +599,9 @@ void clClass::WritePropertyRegistration( buffered_stream& Out ) const
       bool Save = i->Saveable();
       bool Load = i->Loadable();
 
-      if (  Save && !Load && Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Getter (write-only)" << std::endl; }
+      if (  Save && !Load && g_Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Getter (write-only)" << std::endl; }
 
-      if ( !Save &&  Load && Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Setter (read-only)"  << std::endl; }
+      if ( !Save &&  Load && g_Verbose ) { std::cout << "NOTE: Property " << i->FClassName << "::" << i->Name << " has no Setter (read-only)"  << std::endl; }
 
       if ( Save && Load )
       {
@@ -951,13 +951,14 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
       return false;
    }
 */
-   string StubFileName = FClassName + "_Tunneller.h";
+	const string StubFileName = FClassName + "_Tunneller.h";
+	const string FullFileName = g_PackTunnellers ? 
+		FPackage->GetScriptExportDir() + "/" + FPackage->FPackageName + "_Tunnellers.h" :
+		FPackage->GetScriptExportDir() + "/" + StubFileName;
 
-   string FullFileName = FPackage->GetScriptExportDir() + "/" + StubFileName;
+   buffered_stream Stub( FullFileName.c_str(), g_PackTunnellers );
 
-   buffered_stream Stub( FullFileName.c_str() );
-
-	Stub.WriteDoxygenHeader( StubFileName, "Tunneller for class: " + FClassName );
+   if ( !g_PackTunnellers ) Stub.WriteDoxygenHeader( StubFileName, "Tunneller for class: " + FClassName );
 
    for ( clBaseClassesList::const_iterator j = FBaseClasses.begin(); j != FBaseClasses.end(); ++j )
    {
@@ -965,7 +966,7 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
    }
 
    Stub << endl;
-   Stub << "#pragma once" << endl;
+	if ( !g_PackTunnellers ) Stub << "#pragma once" << endl;
    Stub << endl;
    Stub.Include( FDeclaredIn );
    Stub << endl;

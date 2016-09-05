@@ -257,7 +257,7 @@ void WriteFileFooter( buffered_stream& OutFile )
 
 void clPackage::EndExportsFile( buffered_stream* OutExportsI ) const
 {
-	if ( UseExportShortcuts )
+	if ( g_UseExportShortcuts )
 	{
 		// undefined utility macro
 		( *OutExportsI ) << endl << "#undef REG_CLS_MTD" << endl;
@@ -294,7 +294,7 @@ buffered_stream* clPackage::BeginExportsFile( const string& ExpFileName, const c
       OutExportsI->Include( FPackageCustomIncludeName );
    }
 
-   if ( UseExportShortcuts )
+   if ( g_UseExportShortcuts )
    {
       // define utility macro to reduce code size
       ( *OutExportsI ) << endl << "#define REG_CLS_MTD(ClsName, MtdName) \\" << endl;
@@ -335,6 +335,7 @@ void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
 	Out << endl;
 
 	Out.Include( "Generated/" + this->GetEnumConvertersIncludeFile() );
+	if ( g_PackTunnellers ) Out.Include( "Generated/Exports/" + this->FPackageName + "_Tunnellers.h" );
 	Out << endl;
 }
 
@@ -359,7 +360,7 @@ void clPackage::GenerateExportsH( buffered_stream& Out ) const
 void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseClass, const string& BaseClassExports,
                                        const clStringsList& Includes, const clStringsList& ClassNames ) const
 {
-   const int MaxClassesInExport = 200;
+   const int MaxClassesInExport = 500;
 
    int ExportsIndex          = 1;
    int ClassesExportedInFile = 0;
@@ -398,7 +399,11 @@ void clPackage::GenerateExportsFooter( buffered_stream& Out, const string& BaseC
          // optimize includes
          for ( size_t j = 0; j != ClassNames.size(); ++j )
          {
-            if ( ( ClassNames[j] == CN ) || ( ClassNames[j] == CN + "_Tunneller" ) )
+				const bool ShouldIncludeHeader = g_PackTunnellers ?
+					( ClassNames[j] == CN ) :
+					( ClassNames[j] == CN ) || ( ClassNames[j] == CN + "_Tunneller" );
+
+            if ( ShouldIncludeHeader )
             {
                ( *OutExportsI ) << endl;
                OutExportsI->Include( Includes[j] );
@@ -716,7 +721,7 @@ bool clPackage::ProcessPackageInputDirectories()
 
    for ( size_t i = 0; i != FPackageInDirectories.size(); ++i )
    {
-		if ( Verbose )
+		if ( g_Verbose )
 		{
 	      cout << "Building classes database for: " << FPackageInDirectories[i] << "\\" << endl;
 		}

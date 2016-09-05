@@ -19,11 +19,12 @@
 
 using std::ifstream;
 
-bool EnableLogging      = true;
-bool ExportMethods      = true;
-bool UseExportShortcuts = true;
-bool Verbose            = false;
-bool DoExpandMacros     = false;
+bool g_EnableLogging      = true;
+bool g_ExportMethods      = true;
+bool g_UseExportShortcuts = true;
+bool g_Verbose            = false;
+bool g_DoExpandMacros     = false;
+bool g_PackTunnellers     = true;
 
 vector<int> PackagesProcsCounter;
 
@@ -272,7 +273,7 @@ void ExcludeFile( const string& Name )
 {
 	ExcludedFiles.push_back( Name );
 
-	if ( Verbose )
+	if ( g_Verbose )
 	{
 		std::cout << "Added exclude file: " << Name << std::endl;
 	}
@@ -282,7 +283,7 @@ void ExcludeDir( const string& Name )
 {
 	ExcludedDirs.push_back( Name );
 
-	if ( Verbose )
+	if ( g_Verbose )
 	{
 		std::cout << "Added exclude dir: " << Name << std::endl;
 	}
@@ -294,7 +295,7 @@ void ExcludeFiles( const vector<string>& Names )
 	{
 		ExcludedFiles.push_back( Names[i] );		
 
-		if ( Verbose )
+		if ( g_Verbose )
 		{
 			std::cout << "Added exclude file: " << Names[i] << std::endl;
 		}
@@ -307,7 +308,7 @@ bool IsFileExcluded( const string& Name )
 	{
 		if ( Name == ExcludedFiles[i] )
 		{
-			if ( Verbose )
+			if ( g_Verbose )
 			{
 				std::cout << "Excluded file: " << Name << std::endl;
 			}
@@ -325,7 +326,7 @@ bool IsDirExcluded( const string& Name )
 	{
 		if ( Name == ExcludedDirs[i] )
 		{
-			if ( Verbose )
+			if ( g_Verbose )
 			{
 				std::cout << "Excluded dir: " << Name << std::endl;
 			}

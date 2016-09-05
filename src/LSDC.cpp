@@ -98,11 +98,11 @@ void ProcessCommandLine( int argc, char** argv )
 
       if ( OptionName == "-v" || OptionName == "--verbose" )
       {
-         Verbose = true;
+         g_Verbose = true;
       }
       else if ( OptionName == "-s" || OptionName == "--silent" )
       {
-         Verbose = false;
+         g_Verbose = false;
       }
 		else if ( OptionName == "-stats" || OptionName == "--statistics" )
       {
@@ -110,11 +110,11 @@ void ProcessCommandLine( int argc, char** argv )
       }
       else if ( OptionName == "--disable-method-export" || OptionName == "-no-methods" )
       {
-         ExportMethods = false;
+         g_ExportMethods = false;
       }
       else if ( OptionName == "--no-export-shortcuts" )
       {
-         UseExportShortcuts = false;
+         g_UseExportShortcuts = false;
       }
       else if ( OptionName == "--exclude" )
       {
@@ -134,7 +134,7 @@ void ProcessCommandLine( int argc, char** argv )
       }
       else if ( OptionName == "--enable-logging" || OptionName == "-log" )
       {
-         EnableLogging = true;
+         g_EnableLogging = true;
       }
       else if ( OptionName == "-gen-op" || OptionName == "--generate-opcodes" )
       {
@@ -209,7 +209,7 @@ void ProcessCommandLine( int argc, char** argv )
          // store the "only" package
 		  OnlyPackage = Pkg;
 
-		  if ( Verbose ) cout << "Generating code only for Package named \"" << Pkg << "\" " << endl;
+		  if ( g_Verbose ) cout << "Generating code only for Package named \"" << Pkg << "\" " << endl;
 		  
 		  i++;
       }
@@ -220,7 +220,7 @@ void ProcessCommandLine( int argc, char** argv )
 
          PackageInDirs.push_back( Dir );
 
-			if ( Verbose ) cout << "Processing package directory: " << Dir << endl;
+			if ( g_Verbose ) cout << "Processing package directory: " << Dir << endl;
 
          i++;
       }

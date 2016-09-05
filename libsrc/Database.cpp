@@ -37,7 +37,7 @@ bool clDatabase::IsDefined(const std::string& Def) const
 
 string clDatabase::ExpandMacro(const LString& MacroString)
 {
-	if(!DoExpandMacros) { return MacroString; }
+	if ( !g_DoExpandMacros ) { return MacroString; }
 
    int FirstBracket = MacroString.find_first_of('(');
    int num = MacroString.find_last_of(')') - FirstBracket;
@@ -111,7 +111,7 @@ void clDatabase::LoadPropertyMacros()
       }
    }
 
-	if ( Verbose )
+	if ( g_Verbose )
 	{
 	   cout << PropertyMacrosFileName << " contains " << NumMacros << " macro definitions" << endl;
 	}
@@ -169,7 +169,7 @@ void clDatabase::AllocateInheritanceCache()
     // preallocate inheritance cache
 	int Size = GlobalClassesList.size() * GlobalClassesList.size();
 	
-	if ( Verbose )
+	if ( g_Verbose )
 	{
 		cout << "Allocating " << Size << " bytes for inheritance cache (" << GlobalClassesList.size() << " classes in global list)" << endl;
 	}

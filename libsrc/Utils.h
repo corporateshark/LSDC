@@ -26,22 +26,25 @@ using namespace std;
 #define LString string
 
 // output detailed information about method registration for each class
-extern bool EnableLogging;
+extern bool g_EnableLogging;
 // export methods for each class, not just VirtualConstructor
-extern bool ExportMethods;
+extern bool g_ExportMethods;
 // reduce generated code size by using tricky macros
-extern bool UseExportShortcuts;
+extern bool g_UseExportShortcuts;
 
 // replace macros by their code, for debugging purposes
-extern bool DoExpandMacros;
+extern bool g_DoExpandMacros;
+
+// pack all tunnellers into a single (per package) file
+extern bool g_PackTunnellers;
 
 // silence is golden
-extern bool Verbose;
+extern bool g_Verbose;
 
 const char TAB_CHAR = 0x9;
 
-const string EngineVersion = "0.6.36";
-const string LSDCVersion = "0.9.68";
+const string EngineVersion = "0.6.40";
+const string LSDCVersion = "0.9.69";
 const string LSDCDate = __DATE__;
 const string LSDCName = "LinderScript Database Compiler " + LSDCVersion;
 
