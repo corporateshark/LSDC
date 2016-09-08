@@ -104,7 +104,7 @@ void FileWalker::Scan( const string& dirName )
       _dirName += string( "/" );
    }
 
-	if ( Verbose )
+	if ( g_Verbose )
 	{
 	   cout << "Opening : " << _dirName << endl;
 	   cout.flush();
