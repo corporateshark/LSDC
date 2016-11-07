@@ -130,7 +130,7 @@ bool clEnum::ParseNameAndParams(const std::string& S)
 		}
 	}
 
-	FEnumName = Parts[0];
+	FEnumName = Parts[0] == "class" ? Parts[1] : Parts[0];
 
 //	std::cout << "Enum name = " << FEnumName << std::endl;
 
