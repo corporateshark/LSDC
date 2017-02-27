@@ -308,7 +308,8 @@ bool clHeaderProcessor::TryParseEnum()
 			Item.FItemName  = TrimSpaces( TrimComments( Item.FItemName.substr( 0, AssignPos ) ) );
 		}
 
-		if ( Item.FItemName.find( "#pragma" ) == 0 ) continue;
+		// skip macros
+		if ( Item.FItemName.find( "#" ) == 0 ) continue;
 
 		Item.ParseParamsAndValue();
 
