@@ -1,8 +1,11 @@
 #include "Package.h"
 
 #include <iostream>
+
+#if !defined(_MSC_VER) || (_MSC_VER < 1911)
 using std::cout;
 using std::endl;
+#endif
 
 #if (defined(_WIN32) || defined(_WIN64))
 #include <direct.h>

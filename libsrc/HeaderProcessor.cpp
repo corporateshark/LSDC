@@ -18,8 +18,11 @@
 
 #include <iostream>
 #include <fstream>
+
+#if !defined(_MSC_VER) || (_MSC_VER < 1911)
 using std::cout;
 using std::endl;
+#endif
 using std::ifstream;
 
 const string NATIVE_FINAL_CLASS_STR     = "NATIVE_FINAL(";

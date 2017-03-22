@@ -30,12 +30,7 @@ public:
             string DeclaredIn,
             string Type,
             string Value,
-            bool IsArray ): FName( Name ),
-      FPackage( PackageIdx ),
-      FDeclaredIn( DeclaredIn ),
-      FType( Type ),
-      FValue( Value ),
-      FIsArray( IsArray ) {};
+            bool IsArray );
 public:
    string             FName;
    clPackage*         FPackage;

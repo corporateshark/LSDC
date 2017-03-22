@@ -144,7 +144,7 @@ void OpcodeGenerator::write_opcode_mappings( const string& fname )
       string _fill = "";
 
       // make the string look good - add some tabs
-      int _l = _s->length();
+      int _l = static_cast<int>( _s->length() );
 
       while ( _l <= max_len )
       {

@@ -13,6 +13,22 @@
 
 #include "Consts.h"
 
+clConst::clConst(
+	string Name,
+	clPackage* PackageIdx,
+	string DeclaredIn,
+	string Type,
+	string Value,
+	bool IsArray )
+: FName( Name )
+, FPackage( PackageIdx )
+, FDeclaredIn( DeclaredIn )
+, FType( Type )
+, FValue( Value )
+, FIsArray( IsArray )
+{
+}
+
 /*
  * 19/05/2010
      It's here

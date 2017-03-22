@@ -17,7 +17,6 @@
 #include "Package.h"
 
 #include <fstream>
-using std::ifstream;
 
 // TODO : track namespaces for every declaration
 //        (now everything is ready and the parsing logic is really simple)
