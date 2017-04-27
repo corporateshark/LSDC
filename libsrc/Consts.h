@@ -14,6 +14,8 @@
 #ifndef _Consts_h_
 #define _Consts_h_
 
+#include <string>
+
 #include "Utils.h"
 #include "BufStream.h"
 #include "MethodArg.h"

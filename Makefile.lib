@@ -1,6 +1,6 @@
 include Makefile.inc
 
-LIBOBJS=out/Macro.o out/Class.o out/MethodArg.o out/Property.o out/Utils.o out/Method.o out/DotNET.o out/Database.o out/Package.o out/BufStream.o out/Enums.o out/HeaderProcessor.o out/FileWalker.o out/OpcodeGeneration.o
+LIBOBJS=out/Consts.o out/Macro.o out/Class.o out/MethodArg.o out/Property.o out/Utils.o out/Method.o out/DotNET.o out/Database.o out/Package.o out/BufStream.o out/Enums.o out/HeaderProcessor.o out/FileWalker.o out/OpcodeGeneration.o
 
 out/%.o: libsrc/%.cpp
 	$(CC) -o $@ -c $^ $(CXXFLAGS)
