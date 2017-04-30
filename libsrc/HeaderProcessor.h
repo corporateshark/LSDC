@@ -85,6 +85,7 @@ private:
 	/// Try to find any of the special package parameters in the current code line
 	bool ProcessSpecialParameters();
 
+	bool TryParseLSDCCommand();
 	bool TryParseConst();
 	bool TryParseEnum ();
 	bool TryParseStaticMethod();

@@ -45,6 +45,8 @@ const string PACKAGE_GEN_ENUMS          = "GENERATE_ENUM_EXPORTS(";
 const string PACKAGE_GEN_CONSTS         = "GENERATE_CONST_EXPORTS(";
 const string PACKAGE_GEN_NET_EXPORT     = "GENERATE_NET_EXPORT(";
 
+const string LSDC_SKIP_FILE = "LSDC_SKIP_FILE()";
+
 // optional defines (non-preprocessor based) are specified in the command line or in the LSDC options
 // The following markers try to check if the code between them should be processed
 const string LSDC_OPTIONAL_BEGIN = "LSDC_OPTIONAL_BEGIN(";
@@ -324,6 +326,20 @@ bool clHeaderProcessor::TryParseEnum()
 	// todo : If we are in Enum, then use 'int' as a symbol type
 
 	return true;
+}
+
+bool clHeaderProcessor::TryParseLSDCCommand()
+{
+	const size_t Pos = Line.find( LSDC_SKIP_FILE );
+
+	if ( Pos == 0 )
+	{
+		if ( g_Verbose ) cout << "Skipping rest of the file: " << IncFileName << endl;
+
+		return true;
+	}
+
+	return false;
 }
 
 bool clHeaderProcessor::TryParseConst()
@@ -608,6 +624,8 @@ bool clHeaderProcessor::ProcessFile( const string& FileName )
 
       if ( ProcessSpecialParameters() ) { continue; }
 
+		if ( TryParseLSDCCommand() ) { return true; }
+
       if ( TryParseConst() ) { continue; }
 
       if ( TryParseEnum() ) { continue; }
@@ -615,9 +633,9 @@ bool clHeaderProcessor::ProcessFile( const string& FileName )
       if ( TryParseStaticMethod() ) { continue; }
 
       if ( !ParseClass() )
-	  {
-		  return false;
-	  }
+      {
+         return false;
+      }
    }
 
    return true;
