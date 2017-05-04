@@ -54,13 +54,21 @@ setup_source_groups("${ALL_FILES}")
 
 add_library(LSDClib ${ALL_FILES})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${PROJECT_NAME} "src/LSDC.cpp" )
-add_executable("LSDCtest" "src/test.cpp" )
 
 target_link_libraries(LSDC
 	LSDClib
 )
 
-target_link_libraries(LSDCtest
-	LSDClib
-)
+#add_executable("LSDCtest" "src/test.cpp" )
+#target_link_libraries(LSDCtest
+#	LSDClib
+#)
+
+if(WIN32)
+	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME})
+else()
+	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME}.exe)
+endif()
