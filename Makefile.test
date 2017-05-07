@@ -1,9 +1,0 @@
-include Makefile.inc
-
-OBJS=out/test.o
-
-out/%.o: src/%.cpp
-	$(CC) -o $@ -c $^ $(CXXFLAGS)
-
-lsdctest: $(OBJS)
-	$(CC) -o lsdctest.exe $(OBJS) out/liblsdc.a -lstdc++ 
