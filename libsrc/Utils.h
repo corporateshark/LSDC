@@ -118,22 +118,22 @@ bool IsDirExcluded( const string& Name );
 string GetCurrentDate();
 string GetCurrentVersion();
 
-inline bool IsDigit( const char Ch )
+inline static bool IsDigit( const char Ch )
 {
 	return ( ( Ch >= '0' ) && ( Ch <= '9' ) );
 }
 
-inline bool IsAlpha( char Ch )
+inline static bool IsAlpha( char Ch )
 {
 	return ( ( Ch >= 'a' ) && ( Ch <= 'z' ) ) || ( ( Ch >= 'A' ) && ( Ch <= 'Z' ) );
 }
 
-inline bool IsAlphanumeric( char Ch )
+inline static bool IsAlphanumeric( char Ch )
 {
 	return IsDigit( Ch ) || IsAlpha( Ch );
 }
 
-inline bool IsStrAlphanumeric( const string& S )
+inline static bool IsStrAlphanumeric( const string& S )
 {
 	for ( size_t i = 0; i != S.length(); i++ )
 	{
