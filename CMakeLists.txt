@@ -67,8 +67,4 @@ target_link_libraries(LSDC
 #	LSDClib
 #)
 
-if(WIN32)
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME}.exe)
-else()
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME})
-endif()
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME})
