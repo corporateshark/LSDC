@@ -1018,11 +1018,24 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
 
 string clField::FromString( const string& F )
 {
-   size_t TypePos = F.find( "nativefield " );
+   const size_t TypePos = F.find( "nativefield " );
 
    string CleanLine = TrimSpaces( F.substr( TypePos + 12 ) );
 
-   size_t SpacePos = CleanLine.find_last_of( ' ' );
+	// trip C++11 default initializers
+	{
+		auto p = CleanLine.find_last_of( '=' );
+
+		while ( p != string::npos )
+		{
+			CleanLine = CleanLine.substr( 0, p );
+			p = CleanLine.find_last_of( '=' );
+		}
+
+		CleanLine = TrimSpaces( CleanLine );
+	}
+
+   const size_t SpacePos = CleanLine.find_last_of( ' ' );
 
    FFieldName    = TrimSpaces( CleanLine.substr( SpacePos ) );
    FFieldType    = TrimSpaces( CleanLine.substr( 0, SpacePos ) );
@@ -1030,7 +1043,7 @@ string clField::FromString( const string& F )
 
    FExcludeFromExport = false;
 
-   if ( FFieldName.length() > 0 && FFieldName[FFieldName.length()-1] == ';' ) { FFieldName = FFieldName.substr( 0, FFieldName.length() - 1 ); }
+   if ( !FFieldName.empty() && FFieldName.back() == ';' ) FFieldName.pop_back();
 
    return "";
 }
