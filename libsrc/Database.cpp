@@ -692,12 +692,14 @@ bool clDatabase::IsTemplateType( const string& Name )
 
 string clDatabase::GetAppropriateToStringConverter( const string& type )
 {
+   if (type == "LString" || type == "std::string" || type == "string")  return "EMPTY_CONVERTER";
    string TheType = StripTypeName( type );
    return ToStringConverters[TheType];
 }
 
 string clDatabase::GetAppropriateFromStringConverter( const string& type )
 {
+   if (type == "LString" || type == "std::string" || type == "string")  return "EMPTY_CONVERTER";
    string TheType = StripTypeName( type );
    return FromStringConverters[TheType];
 }

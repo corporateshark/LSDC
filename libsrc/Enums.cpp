@@ -142,7 +142,8 @@ void clEnum::FromStringConverterHeader( buffered_stream& Out, bool InHeader ) co
 	// Out << "/// FromString_Converter for " << FEnumName << endl;
 	string RealCvtName = FFromStringConverterName.empty() ? ( FEnumName + string( "_FromString" ) ) : FFromStringConverterName;
 
-	Out << FEnumName << " " << RealCvtName << "(const LString& Str, bool* ErrorCodePtr" << (InHeader ? string(" = NULL") : string("")) << ")";
+//	Out << FEnumName << " " << RealCvtName << "(const LString& Str, bool* ErrorCodePtr" << (InHeader ? string(" = nullptr") : string("")) << ")";
+	Out << FEnumName << " " << RealCvtName << "(const LString& Str, bool* ErrorCodePtr)";
 }
 
 void clEnum::ToStringConverterHeader( buffered_stream& Out ) const
@@ -168,16 +169,25 @@ void clEnum::GenerateToStringConverter( buffered_stream& Out ) const
 
 	Out << endl << "{" << endl;
 
-	for ( size_t i = 0 ; i < FItems.size() ; i++ )
+	if ( FItems.size() )
 	{
-		std::string ItemName = FItems[i].FItemName;
+		Out << "\tswitch (TheValue)" << endl;
+		Out << "\t{" << endl;
 
-		// optional name stripping
-		if(FStripName) { ItemName = FItems[i].GetStrippedName(FEnumName); }
+		for ( size_t i = 0 ; i < FItems.size() ; i++ )
+		{
+			std::string ItemName = FItems[i].FItemName;
 
-		Out << "\tif (TheValue == " << FItems[i].FItemName << ") return \"" << ItemName << "\";" << endl;
+			// optional name stripping
+			if (FStripName) { ItemName = FItems[i].GetStrippedName(FEnumName); }
+
+			Out << "\t\tcase " << FItems[i].FItemName << ": return \"" << ItemName << "\";" << endl;
+		}
+
+		Out << "\t}" << endl;
 	}
 
+	Out << endl << "\tLASSERT(false); // run LSDC to regenerate this file" << endl;
 	Out << endl << "\treturn \"\";" << endl << "}" << endl;
 }
 
