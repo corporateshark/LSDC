@@ -252,7 +252,12 @@ bool clHeaderProcessor::TryParseEnum()
 			exit( 255 );
 		}
 
-		Line += TrimSpaces( TrimComments( NextLine ) );
+		NextLine = TrimSpaces( TrimComments( NextLine ) );
+
+		// skip macros
+		if ( NextLine.find( "#" ) == 0 ) continue;
+
+		Line += NextLine;
 	}
 
 	size_t BraceOpenPos  = Line.find( '{' );
@@ -293,7 +298,7 @@ bool clHeaderProcessor::TryParseEnum()
 		Item.FItemName  = Line;
 		Item.FItemValue = "";
 
-		size_t CommaPos  = Line.find( ',' );
+		const size_t CommaPos  = Line.find( ',' );
 
 		if ( CommaPos != -1 )
 		{
@@ -305,7 +310,7 @@ bool clHeaderProcessor::TryParseEnum()
 			Line = "";
 		}
 
-		size_t AssignPos = Item.FItemName.find( '=' );
+		const size_t AssignPos = Item.FItemName.find( '=' );
 
 		if ( AssignPos != -1 )
 		{
