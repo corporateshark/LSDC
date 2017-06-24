@@ -605,7 +605,14 @@ void clClass::WritePropertyRegistration( buffered_stream& Out ) const
 
       if ( Save && Load )
       {
-         Out << "   " << i->GetRegistrationCode()  << endl;
+         string FullPropertyName;
+         Out << "   " << i->GetRegistrationCode(FullPropertyName)  << endl;
+
+         if ( i->IsEditable() )
+         {
+            Out << "   " << FullPropertyName << "->FEditable   = true;" << endl;
+            Out << "   " << FullPropertyName << "->FEditorType = \"" << i->EditorType << "\";" << endl;
+         }
       }
    }
 

@@ -67,6 +67,8 @@ string clProperty::ToString() const
    AddParam( ParamList, "NetRemoveFunction",   NetRemoveFunction );
    AddParam( ParamList, "NetClearFunction",    NetClearFunction );
    AddParam( ParamList, "NetCounterFunction",  NetCounterFunction );
+   AddParam( ParamList, "EditorType",  EditorType );
+   AddParam( ParamList, "Editable",    Editable);
 
    return P + string( "(" ) + ParamList + string( ")" );
 }
@@ -106,6 +108,8 @@ bool clProperty::SetParam( const string& ParamName, const string& ParamValue )
    AssignP( FieldName )
    AssignP( IndexType )
    AssignP( Counter )
+   AssignP( Editable )
+   AssignP( EditorType )
 
 	if ( ParamName == "Type" )
 	{
@@ -643,6 +647,11 @@ string clProperty::GetScriptDeclaration() const
 	return res;
 }
 
+bool clProperty::IsEditable() const
+{
+	return (Editable == "True") || (Editable == "true") || (Editable == "TRUE");
+}
+
 /////// New serialization scheme
 bool clProperty::Saveable() const
 {
@@ -936,7 +945,7 @@ string clProperty::GetLoadSaveDeclarations() const
 	return res;
 }
 
-string clProperty::GetRegistrationCode() const
+string clProperty::GetRegistrationCode(string& FullPropertyName) const
 {
    bool isArray = ( IndexType == "int" ) || ( IndexType == "size_t" );
 
@@ -955,8 +964,9 @@ string clProperty::GetRegistrationCode() const
 
    if ( isArray )
    {
+      FullPropertyName = FieldName;
       // todo : support getter/setter
-      res += ObjPrefix + string( "ARRAY_FIELD(" ) + FieldName;
+      res += ObjPrefix + string( "ARRAY_FIELD(" ) + FullPropertyName;
    }
    else
    {
@@ -966,7 +976,8 @@ string clProperty::GetRegistrationCode() const
 
 //         if(SmartPointer) { CommonPart += string("_SMARTPTR"); }
 
-         CommonPart += string("(" ) + CompressSerializedName( FieldName );
+         FullPropertyName = CompressSerializedName( FieldName );
+         CommonPart += string("(" ) + FullPropertyName;
 
          res += CommonPart;
 
@@ -974,7 +985,9 @@ string clProperty::GetRegistrationCode() const
       }
       else
       {
-         string CommonPart = ObjPrefix + string( "GETTER_SETTER(" ) + Name;
+         FullPropertyName = Name;
+
+         string CommonPart = ObjPrefix + string( "GETTER_SETTER(" ) + FullPropertyName;
 
          res += CommonPart;
          //+ Getter + string(", ") + Setter;
@@ -982,6 +995,8 @@ string clProperty::GetRegistrationCode() const
          add_res += CommonPart;
       }
    }
+
+   FullPropertyName = "Prop_" + FullPropertyName;
 
    string RegCommon = string( ", " ) + FClassName + ", " + Name;
 

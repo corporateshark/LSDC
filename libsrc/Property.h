@@ -111,7 +111,7 @@ struct clProperty
    string GetSaveCode() const;
    string GetLoadCode() const;
 
-   string GetRegistrationCode() const;
+   string GetRegistrationCode(string& FullPropertyName) const;
    string GetLoadSaveDeclarations() const;
 
    bool Saveable() const;
@@ -119,6 +119,16 @@ struct clProperty
 
    string GetFromStringConverter() const;
    string GetToStringConverter() const;
+
+#pragma endregion
+
+#pragma Editing stuff
+
+   string EditorType;
+
+   string Editable;
+
+   bool IsEditable() const;
 
 #pragma endregion
 
