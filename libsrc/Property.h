@@ -122,7 +122,7 @@ struct clProperty
 
 #pragma endregion
 
-#pragma Editing stuff
+#pragma region Editing stuff
 
    string EditorType;
 
