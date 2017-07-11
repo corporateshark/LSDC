@@ -934,6 +934,85 @@ string clProperty::GetLoadSaveDeclarations() const
 			res2 += string( ")" );
 
 			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			/// array setter
+			res2 = string("ARRAY_PROPERTY_SETOBJECT_FUNCTION__FIELD");
+			if(SmartPointer) { res2 += string("_SMARTPTR"); }
+			res2 += string("(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ", ") + Type;
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			res2 = string("ARRAY_PROPERTY_INSERTOBJECT_FUNCTION__FIELD");
+			if(SmartPointer) { res2 += string("_SMARTPTR"); }
+			res2 += string("(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ", ") + Type;
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			res2 = string("ARRAY_PROPERTY_REMOVEOBJECT_FUNCTION__FIELD");
+			if(SmartPointer) { res2 += string("_SMARTPTR"); }
+			res2 += string("(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+		} else
+		{
+			res += string( "\n" );
+			// POD values
+
+			/// array getter
+			string res2  ("ARRAY_PROPERTY_GETITEM_FUNCTION__FIELD(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ", ") + GetToStringConverter();
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			/// array setter
+			res2 = string("ARRAY_PROPERTY_SETITEM_FUNCTION__FIELD(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ", ") + GetFromStringConverter();
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			res2 = string("ARRAY_PROPERTY_INSERTITEM_FUNCTION__FIELD(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ", ") + GetFromStringConverter();
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
+
+			res += string( "\n" );
+
+			res2 = string("ARRAY_PROPERTY_REMOVEITEM_FUNCTION__FIELD(");
+			res2 += FieldName;
+			res2 += string( ", ") + FClassName;
+			res2 += string( ")" );
+
+			res += FDatabase->ExpandMacro( res2 );
 		}
 
 		res += string( "\n" );
