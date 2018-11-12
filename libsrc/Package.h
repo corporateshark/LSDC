@@ -11,10 +11,10 @@
 struct clDatabase;
 
 // some directory names for code generation
-const string StatisticsDirName    = "Stats";
-const string ScriptDirName        = "Script";
-const string ExportDirName        = "Export";
-const string NETDirName           = "NET";
+const std::string StatisticsDirName    = "Stats";
+const std::string ScriptDirName        = "Script";
+const std::string ExportDirName        = "Export";
+const std::string NETDirName           = "NET";
 
 /**
    Package is a collection of exported items:
@@ -73,59 +73,59 @@ public:
    virtual ~clPackage() {};
 
    /// write debug package information (serializable/netexportable lists, directories, file names)
-   void DumpPackageStats( const string& fname );
+   void DumpPackageStats( const std::string& fname );
 
    /// Generate the directory name for script export (tunneller classes)
-   string GetScriptExportDir() const;
+   std::string GetScriptExportDir() const;
 
    /// Total number of methods registered in this package (for code statistics)
    int FPackagesProcsCounter;
 
    /// The name of the package
-   string FPackageName;
+   std::string FPackageName;
 
    /// The name of .NET namespace for the package
-   string FPackageNetName;
+   std::string FPackageNetName;
 
    /// The prefix of C++ export files
-   string FPackageCPPPrefix;
+   std::string FPackageCPPPrefix;
 
    /// Additional include file for the package
-   string FPackageCustomIncludeName;
+   std::string FPackageCustomIncludeName;
 
    /// C++-compatible name of the package
-   string FPackageCPPName;
+   std::string FPackageCPPName;
 
    /// The directory(ies) of the package
-   vector<string> FPackageInDirectories;
+   std::vector<std::string> FPackageInDirectories;
 
    /// Output for the package registration source code
-   string FPackageOutDirectory;
+   std::string FPackageOutDirectory;
 
    /// Custom include files for this package. Use CUSTOM_INCLUDE keyword in the source code
-   vector<string> FPackageCustomIncludes;
+   std::vector<std::string> FPackageCustomIncludes;
 
    /// List of external dependencies
-   vector<string> FDependsOn;
+   std::vector<std::string> FDependsOn;
 
    /// List of native final classes
-   vector<string>    FNeverOverrideMethodsOf;
+   std::vector<std::string>    FNeverOverrideMethodsOf;
 
 #pragma region Item collections
 
 public:
 
    /// Local class database (list of package's classes)
-   map<string, clClass>    FClasses;
+   map<std::string, clClass>    FClasses;
 
    /// Exported Enums in this package
-   vector<clEnum> FEnums;
+   std::vector<clEnum> FEnums;
 
    /// Exported global Consts in this package
-   vector<clConst> FConsts;
+   std::vector<clConst> FConsts;
 
    /// Static methods
-   vector<clMethod> FScriptExportMethods;
+   std::vector<clMethod> FScriptExportMethods;
 
    /// Exported global variables ?
 
@@ -136,22 +136,22 @@ public:
 public:
 
    /// Direct access to class information
-   clClass* GetClassPtr( const string& ClassName ) { if ( !ClassExists( ClassName ) ) { return NULL; } return &FClasses[ClassName]; };
+   clClass* GetClassPtr( const std::string& ClassName ) { if ( !ClassExists( ClassName ) ) { return NULL; } return &FClasses[ClassName]; };
 
    /// Check if class exists in this package
-   bool     ClassExists( const string& ClassName ) { return FClasses.count( ClassName ) > 0; }
+   bool     ClassExists( const std::string& ClassName ) { return FClasses.count( ClassName ) > 0; }
 
    /// Check if this class should be exported to .NET
-   bool IsWrappedClass( const string& ClassName );
+   bool IsWrappedClass( const std::string& ClassName );
 
    /// Check if this class is marked SERIALIZABLE_CLASS()
-//   bool IsSerializableClass( const string& ClassName );
+//   bool IsSerializableClass( const std::string& ClassName );
 
    /// Check inheritance relation between two classes
-   bool InheritsFrom( const string& Class, const string& BaseClass ) const;
+   bool InheritsFrom( const std::string& Class, const std::string& BaseClass ) const;
 
    ///  Get the highest class in the hierarchy which is the ancestor of ClassName ('rootest' is a strange word)
-   string   GetRootestClassFor( const string& ClassName );
+   std::string   GetRootestClassFor( const std::string& ClassName );
 
 #pragma endregion
 
@@ -189,7 +189,7 @@ private:
    void GenerateClassesList( buffered_stream& Out ) const;
 
    /// Script tunnellers and metaclass registration code
-   void GenerateStubs( const string& BaseClass, const string& BaseClassExports ) const;
+   void GenerateStubs( const std::string& BaseClass, const std::string& BaseClassExports ) const;
 
    /// Script language definitions
    void GenerateNativeFramework() const;
@@ -212,10 +212,10 @@ private:
 
     FileNameBase is the C++ source file name (where the declarations reside) without .h/.cpp extension
    */
-   void GenerateEnumConverterHeaders( const string& FileNameBase );
+   void GenerateEnumConverterHeaders( const std::string& FileNameBase );
 
    /// Declare ToString and FromString converter prototypes for every enum in this package
-   void GenerateEnumConverters( const string& FileName );
+   void GenerateEnumConverters( const std::string& FileName );
 
 	LString GetEnumConvertersIncludeFile() const;
 
@@ -228,10 +228,10 @@ public:
    bool ProcessPackageInputDirectories();
 
    /// Process header file and extract each definition
-   void ParseHeaderFile( const string& FileName );
+   void ParseHeaderFile( const std::string& FileName );
 
    /// Last parsing error
-   string FLastError;
+   std::string FLastError;
 #pragma endregion
 
 private:
@@ -246,18 +246,18 @@ private:
    */
 
    /// Generate standart starting part for the class exports file
-   buffered_stream* BeginExportsFile( const string& ExpFileName, const clStringsList& Includes, int Index ) const;
+   buffered_stream* BeginExportsFile( const std::string& ExpFileName, const clStringsList& Includes, int Index ) const;
 
    /// Generate standart ending trailer for the class exports file
    void             EndExportsFile( buffered_stream* OutExportsI ) const;
 
    /// Make a unique file name for the next class registration file
-   string    CreateExportRegFileName( int Index ) const;
-   string    CreateExportRegFileNameWithoutPath( int Index ) const;
+   std::string    CreateExportRegFileName( int Index ) const;
+   std::string    CreateExportRegFileNameWithoutPath( int Index ) const;
    void      GenerateExportsRegHeader( buffered_stream& Out ) const;
 
    void      GenerateExportsHeader( buffered_stream& Out ) const;
-   void      GenerateExportsFooter( buffered_stream& Out, const string& BaseClass, const string& BaseClassExports,
+   void      GenerateExportsFooter( buffered_stream& Out, const std::string& BaseClass, const std::string& BaseClassExports,
                                     const clStringsList& Includes, const clStringsList& ClassNames ) const;
 
    void      GenerateExportsH( buffered_stream& Out ) const;
@@ -267,7 +267,7 @@ private:
 
 private:
    // Remove any of PackageInDirs from file name
-   string RemovePackageDirectoryFromFile( const LString& InName ) const;
+   std::string RemovePackageDirectoryFromFile( const LString& InName ) const;
 };
 
 #endif

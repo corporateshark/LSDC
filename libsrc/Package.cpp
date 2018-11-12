@@ -25,6 +25,8 @@ using std::endl;
 
 #include "FileWalker.h"
 
+using namespace std;
+
 class Package_FileWalker : public FileWalker
 {
 public:
