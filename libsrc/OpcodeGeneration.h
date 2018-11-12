@@ -20,11 +20,8 @@
 */
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
-
-using namespace std;
 
 #define TAB_SIZE 3
 
@@ -32,23 +29,23 @@ class OpcodeGenerator
 {
 public:
 
-   vector<string> opcodes;
+   std::vector<std::string> opcodes;
    int max_len;
 
-   void load_opcodes( const string& fname );
-   void write_opcode_mappings( const string& fname );
-   void write_static_executor_array( const string& fname );
+   void load_opcodes( const std::string& fname );
+   void write_opcode_mappings( const std::string& fname );
+   void write_static_executor_array( const std::string& fname );
 
-   void write_execution_method_list( const string& fname );
+   void write_execution_method_list( const std::string& fname );
 
-   string out_dir;
+   std::string out_dir;
 
-   string class_name;
+   std::string class_name;
 
 public:
    int Generate( int offs, int argc, char** argv );
 };
 
-inline string remove_op( const string& s ) { return s.substr( 3, s.length() - 1 ); }
+inline std::string remove_op( const std::string& s ) { return s.substr( 3, s.length() - 1 ); }
 
 #endif
