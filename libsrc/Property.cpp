@@ -68,7 +68,7 @@ std::string clProperty::ToString() const
 	AddParam(ParamList, "NetRemoveFunction", NetRemoveFunction);
 	AddParam(ParamList, "NetClearFunction", NetClearFunction);
 	AddParam(ParamList, "NetCounterFunction", NetCounterFunction);
-	AddParam(ParamList, "EditorParams", EditorParams);
+	AddParam(ParamList, "EditorFile", EditorFile);
 	AddParam(ParamList, "EditorType", EditorType);
 	AddParam(ParamList, "Editable", Editable);
 
@@ -112,7 +112,7 @@ bool clProperty::SetParam(const std::string& ParamName, const std::string& Param
 	AssignP(Counter)
 	AssignP(Editable)
 	AssignP(EditorType)
-	AssignP(EditorParams)
+	AssignP(EditorFile)
 
 	if (ParamName == "Type")
 	{

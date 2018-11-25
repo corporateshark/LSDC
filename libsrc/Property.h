@@ -126,8 +126,8 @@ struct clProperty
 	/// Editor type name (empty string for default editor)
 	std::string  EditorType;
 
-	/// Generic string with parameters (e.g., min/max values for floats/vectors etc.)
-	std::string  EditorParams;
+	/// Serialized property editor
+	std::string  EditorFile;
 
 	/// Is this property editable
 	std::string  Editable;
