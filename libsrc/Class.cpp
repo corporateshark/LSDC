@@ -610,9 +610,10 @@ void clClass::WritePropertyRegistration( buffered_stream& Out ) const
 
          if ( i->IsEditable() )
          {
-            Out << "   " << FullPropertyName << "->FEditable   = true;" << endl;
-            Out << "   " << FullPropertyName << "->FEditorType = \"" << i->EditorType << "\";" << endl;
-            Out << "   " << FullPropertyName << "->FEditorFile = \"" << TrimQuotes(i->EditorFile) << "\";" << endl;
+            Out << "   " << FullPropertyName << "->FEditable     = true;" << endl;
+            Out << "   " << FullPropertyName << "->FEditorType   = \"" << i->EditorType << "\";" << endl;
+            Out << "   " << FullPropertyName << "->FEditorParams = \"" << TrimQuotes(i->EditorParams) << "\";" << endl;
+            Out << "   " << FullPropertyName << "->FEditorFile   = \"" << TrimQuotes(i->EditorFile) << "\";" << endl;
          }
       }
    }

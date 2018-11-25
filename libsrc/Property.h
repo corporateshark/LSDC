@@ -129,6 +129,9 @@ struct clProperty
 	/// Serialized property editor
 	std::string  EditorFile;
 
+	/// Additional parameters for property editor
+	std::string  EditorParams;
+
 	/// Is this property editable
 	std::string  Editable;
 
