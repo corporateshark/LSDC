@@ -207,17 +207,20 @@ private:
    void GenerateConsts();
 
 private:
-   /**
-     Declare ToString and FromString converter prototypes for every enum in this package
+	/**
+		Declare ToString and FromString converter prototypes for every enum in this package
 
-    FileNameBase is the C++ source file name (where the declarations reside) without .h/.cpp extension
-   */
-   void GenerateEnumConverterHeaders( const std::string& FileNameBase );
+		FileNameBase is the C++ source file name (where the declarations reside) without .h/.cpp extension
+	*/
+	void GenerateEnumConverterHeaders( const std::string& FileNameBase );
 
-   /// Declare ToString and FromString converter prototypes for every enum in this package
-   void GenerateEnumConverters( const std::string& FileName );
+	/// Declare ToString and FromString converter prototypes for every enum in this package
+	void GenerateEnumConverters( const std::string& FileName );
 
 	LString GetEnumConvertersIncludeFile() const;
+
+	/// Generate imgui editing code for 'enum' types
+	void GenerateEnumEditors( const string& FileName );
 
 #pragma endregion
 
