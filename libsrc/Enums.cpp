@@ -197,13 +197,21 @@ void clEnum::GenerateFromStringConverter( buffered_stream& Out ) const
 
 	Out << endl << "{" << endl;
 
-	Out << "\tif(ErrorCodePtr)" << endl << "\t{" << endl;
+	Out << "\tif (ErrorCodePtr)" << endl << "\t{" << endl;
 	Out << "\t\t*ErrorCodePtr = false;" << endl;
 	Out << "\t}" << endl << endl;
 
 	for ( size_t i = 0 ; i < FItems.size() ; i++ )
 	{
-		if(!FItems[i].FExported) { continue; }
+		if (!FItems[i].FExported) { continue; }
+
+		const bool IsInvalidValue = FItems[i].FAssertInConverter;
+
+		if (IsInvalidValue)
+		{
+			// invalid value, generate assert
+			Out << "\t// This value was marked as invalid" << endl;
+		}
 
 		Out << "\tif (Str == \"" << FItems[i].FItemName << "\"";
 
@@ -215,25 +223,24 @@ void clEnum::GenerateFromStringConverter( buffered_stream& Out ) const
 			Out << " || Str == \"" << StrippedName << "\"";
 		}
 
-		Out << ")" << endl;
+		Out << ")";// << endl;
 
-		Out << "\t{" << endl;
+//		Out << "\t{" << endl;
 
-		if(FItems[i].FAssertInConverter)
+		if (IsInvalidValue)
 		{
 			// invalid value, generate assert
-			Out << "\t\t// This value was marked as invalid" << endl;
-			Out << "\t\tLASSERT(false);" << endl;
+			Out << " LASSERT(false);" << endl;
 		} else
 		{
-			Out << "\t\treturn " << FItems[i].FItemName << ";" << endl;
+			Out << " return " << FItems[i].FItemName << ";" << endl;
 		}
 
-		Out << "\t}" << endl;
+//		Out << "\t}" << endl;
 	}
 
 	Out << endl;
-	Out << "\tif(ErrorCodePtr)" << endl << "\t{" << endl;
+	Out << "\tif (ErrorCodePtr)" << endl << "\t{" << endl;
 	Out << "\t\t*ErrorCodePtr = true;" << endl;
 	Out << "\t}" << endl;
 
