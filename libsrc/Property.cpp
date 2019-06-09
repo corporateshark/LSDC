@@ -1045,7 +1045,7 @@ std::string clProperty::GetRegistrationCode(std::string& FullPropertyName) const
 
 	std::string res = std::string("REGISTER_PROPERTY__");
 
-	std::string add_res = std::string("REGISTER_PROPERTY_ACCESSORS__");
+	std::string add_res = g_Indent + std::string("REGISTER_PROPERTY_ACCESSORS__");
 
 	std::string ObjPrefix = (isScalar ? "SCALAR_" : "OBJECT_");
 

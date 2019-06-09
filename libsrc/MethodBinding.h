@@ -223,7 +223,7 @@ void GenerateBinder( std::ostream& Out, bool Static, bool Function, int ParamsCo
    Out << ") " << ( ( Const ) ? "const " : "" )  << ( ( Volatile ) ? "volatile " : "" ) << ", const LString& MethodName)" << endl;
 
    Out << "{" << endl;
-   Out << "   " << BinderClassName << "* Method = new clNative" << ( ( Static ) ? "Static" : "" ) << "MethodParams" << ParamsCount << "_Func" << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
+   Out << g_Indent << BinderClassName << "* Method = new clNative" << ( ( Static ) ? "Static" : "" ) << "MethodParams" << ParamsCount << "_Func" << ( ( Const ) ? "_Const" : "" ) << ( ( Volatile ) ? "_Volatile" : "" );
 
    if ( !( Static && ParamsCount == 0 && !Function ) )
    {

@@ -25,6 +25,7 @@ bool g_UseExportShortcuts = true;
 bool g_Verbose            = false;
 bool g_DoExpandMacros     = false;
 bool g_PackTunnellers     = true;
+bool g_GenerateMethods    = false;
 
 vector<int> PackagesProcsCounter;
 

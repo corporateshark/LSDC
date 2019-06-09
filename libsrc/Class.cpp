@@ -278,7 +278,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
 
    if ( g_EnableLogging )
    {
-      Stub << "         // Class: " << FClassName << endl;
+      Stub << g_Indent << g_Indent << g_Indent << "// Class: " << FClassName << endl;
    }
 
    for ( clMethodsList::const_iterator i = FMethods.begin(); i != FMethods.end(); ++i )
@@ -292,7 +292,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
          {
             if ( g_ExportMethods && g_EnableLogging )
             {
-               Stub << "            // Adding abstract: " << i->FMethodName << endl;
+               Stub << g_Indent << g_Indent << g_Indent << g_Indent << "// Adding abstract: " << i->FMethodName << endl;
             }
 
             AbstractMethods.push_back( i->FMethodName );
@@ -307,7 +307,7 @@ void clClass::CollectAbstractMethods( buffered_stream& Stub, clStringsList& Abst
          {
             if ( g_ExportMethods && g_EnableLogging )
             {
-               Stub << "            // Overriding abstract: " << i->FMethodName << endl;
+               Stub << g_Indent << g_Indent << g_Indent << g_Indent << "// Overriding abstract: " << i->FMethodName << endl;
             }
 
             AbstractMethods.erase( j );
@@ -329,7 +329,7 @@ bool clClass::IsAbstract( buffered_stream& Stub ) const
    {
       if ( g_ExportMethods && g_EnableLogging )
       {
-         Stub << "      // Abstract method: " << ( *i ) << endl;
+         Stub << g_Indent << g_Indent << "// Abstract method: " << ( *i ) << endl;
       }
    }
 
@@ -347,7 +347,7 @@ bool clClass::GenerateStdSaveCode( buffered_stream& Out )
    Out << "void " << FClassName << "::" << SaveName << "(iXLMLWriter* XLMLStream)" << endl;
    Out << "{" << endl;
 
-   Out << "   guard(\"" << FClassName << "::SaveToXLMLStream()\" );" << endl << endl;
+   Out << g_Indent << "guard(\"" << FClassName << "::SaveToXLMLStream()\" );" << endl << endl;
 
    // first - the base class. TODO : check, if we are succeeding from iParametrizable
    string ovClass;
@@ -379,7 +379,7 @@ bool clClass::GenerateStdSaveCode( buffered_stream& Out )
    }
 
    Out << endl;
-   Out << "   unguard();" << endl;
+   Out << g_Indent << "unguard();" << endl;
 
    Out << "}" << endl;
 
@@ -396,7 +396,7 @@ bool clClass::GenerateStdLoadCode( buffered_stream& Out )
    Out << "void " << FClassName << "::AcceptParameter(const LString& ParamName, const LString& ParamValue)" << endl;
    Out << "{" << endl;
 
-   Out << "   guard(\"" << FClassName << "::AcceptParameter(\" + ParamName + \", \" + ParamValue + \")\" );" << endl << endl;
+   Out << g_Indent << "guard(\"" << FClassName << "::AcceptParameter(\" + ParamName + \", \" + ParamValue + \")\" );" << endl << endl;
 
    for ( size_t i = 0 ; i < FProperties.size() ; ++i )
    {
@@ -443,7 +443,7 @@ bool clClass::GenerateStdLoadCode( buffered_stream& Out )
 
    Out << "\t}" << endl << endl;
 
-   Out << "   unguard();" << endl;
+   Out << g_Indent << "unguard();" << endl;
 
    Out << "}" << endl;
 
@@ -475,7 +475,7 @@ void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) co
 
       if ( WithMacro  && g_UseExportShortcuts )
       {
-         Out << "   #define _RM__(Mtd) REG_CLS_MTD(" << FClassName << ",Mtd)" << endl;
+         Out << g_Indent << "#define _RM__(Mtd) REG_CLS_MTD(" << FClassName << ",Mtd)" << endl;
       }
 
       for ( clMethodsList::const_iterator i = FMethods.begin(); i != FMethods.end(); ++i )
@@ -486,19 +486,19 @@ void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) co
             if ( !g_UseExportShortcuts )
             {
                // old code was the direct invocation
-               Out << "   StaticClass->RegisterMethod( BindNativeMethod( &" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << "::" << ( i->FMethodName ) << ", \"" << ( i->FMethodName ) << "\" ) );" << endl;
+               Out << g_Indent << "StaticClass->RegisterMethod( BindNativeMethod( &" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << "::" << ( i->FMethodName ) << ", \"" << ( i->FMethodName ) << "\" ) );" << endl;
             }
             else
             {
                // now we use macros to reduce C++ file size
                if ( WithMacro )
                {
-                  Out << "   _RM__(" << i->FMethodName << ")" << endl;
+                  Out << g_Indent << "_RM__(" << i->FMethodName << ")" << endl;
                }
                else
                {
                   // there are not much methods to define additional macro
-                  Out << "   REG_CLS_MTD( " << FClassName << "," << i->FMethodName << " )" << endl;
+                  Out << g_Indent << "REG_CLS_MTD( " << FClassName << "," << i->FMethodName << " )" << endl;
                }
             }
          }
@@ -506,7 +506,7 @@ void clClass::WriteMethodRegistration( buffered_stream& Out, bool Tunneller ) co
 
       if ( WithMacro && g_UseExportShortcuts )
       {
-         Out << "   #undef _RM__" << endl;
+         Out << g_Indent << "#undef _RM__" << endl;
       }
    }
 }
@@ -557,11 +557,11 @@ void clClass::WriteFieldHandlers( buffered_stream& Out ) const
       }
       else if ( i->FAccess == "protected:" )
       {
-         Out << "   // bypassing 'protected' property: \"" + i->FFieldName +  "\", \"" + i->FPropertyName + "\", \"" + i->FFieldType + "\"" << endl;
+         Out << g_Indent << "// bypassing 'protected' property: \"" + i->FFieldName +  "\", \"" + i->FPropertyName + "\", \"" + i->FFieldType + "\"" << endl;
       }
       else if ( i->FAccess == "private:" )
       {
-         Out << "   // bypassing 'private' property: \"" + i->FFieldName +  "\", \"" + i->FPropertyName + "\", \"" + i->FFieldType + "\"" << endl;
+         Out << g_Indent << "// bypassing 'private' property: \"" + i->FFieldName +  "\", \"" + i->FPropertyName + "\", \"" + i->FFieldType + "\"" << endl;
       }
    }
 
@@ -580,7 +580,7 @@ void clClass::WriteFieldRegistration( buffered_stream& Out ) const
       {
          if ( !i->FExcludeFromExport )
          {
-            Out << "   BIND_NATIVE_FIELD(" << FClassName << ", " << i->FFieldName << ");" << endl;
+            Out << g_Indent << "BIND_NATIVE_FIELD(" << FClassName << ", " << i->FFieldName << ");" << endl;
          }
       }
    }
@@ -606,14 +606,14 @@ void clClass::WritePropertyRegistration( buffered_stream& Out ) const
       if ( Save && Load )
       {
          string FullPropertyName;
-         Out << "   " << i->GetRegistrationCode(FullPropertyName)  << endl;
+         Out << g_Indent << i->GetRegistrationCode(FullPropertyName)  << endl;
 
          if ( i->IsEditable() )
          {
-            Out << "   " << FullPropertyName << "->FEditable     = true;" << endl;
-            Out << "   " << FullPropertyName << "->FEditorType   = \"" << i->EditorType << "\";" << endl;
-            Out << "   " << FullPropertyName << "->FEditorParams = \"" << TrimQuotes(i->EditorParams) << "\";" << endl;
-            Out << "   " << FullPropertyName << "->FEditorFile   = \"" << TrimQuotes(i->EditorFile) << "\";" << endl;
+            Out << g_Indent << FullPropertyName << "->FEditable     = true;" << endl;
+            Out << g_Indent << FullPropertyName << "->FEditorType   = \"" << i->EditorType << "\";" << endl;
+            Out << g_Indent << FullPropertyName << "->FEditorParams = \"" << TrimQuotes(i->EditorParams) << "\";" << endl;
+            Out << g_Indent << FullPropertyName << "->FEditorFile   = \"" << TrimQuotes(i->EditorFile) << "\";" << endl;
          }
       }
    }
@@ -646,11 +646,11 @@ void clClass::WriteScriptConstructors( buffered_stream& Out ) const
 {
    if ( FConstructors.empty() )
    {
-      Out << "   // Autogenerated default constructor: " << FClassName << "()" << endl;
+      Out << g_Indent << "// Autogenerated default constructor: " << FClassName << "()" << endl;
       return;
    }
 
-   Out << "   // Constructors" << endl;
+   Out << g_Indent << "// Constructors" << endl;
 
    for ( clMethodsList::const_iterator j = FConstructors.begin(); j != FConstructors.end(); ++j )
    {
@@ -658,7 +658,7 @@ void clClass::WriteScriptConstructors( buffered_stream& Out ) const
 
       string Constructor = Method.FArgTypes.empty() ? "Default constructor: " : "Constructor: ";
 
-      Out << "   // " << Constructor << Method.FMethodName << "(";
+      Out << g_Indent << "// " << Constructor << Method.FMethodName << "(";
 
       for ( size_t i = 0; i != Method.FArgTypes.size(); ++i )
       {
@@ -677,7 +677,7 @@ void clClass::WriteScriptMethods( buffered_stream& Out ) const
 {
    if ( FMethods.empty() ) { return; }
 
-   Out << "   // Methods" << endl;
+   Out << g_Indent << "// Methods" << endl;
 
    for ( clMethodsList::const_iterator j = FMethods.begin(); j != FMethods.end(); ++j )
    {
@@ -698,7 +698,7 @@ void clClass::WriteScriptMethods( buffered_stream& Out ) const
 
       string TypeName = FDatabase->CollapseTypeName( Method.FReturnType );
 
-      Out << "   " << Modifier;
+      Out << g_Indent << Modifier;
       Out << ( Method.FAbstract ? " abstract " : "          " ) ;
       Out << ( Method.FStatic ?   "/*static*/" : "          " );
       Out << TypeName << " " << Method.FMethodName << "(";
@@ -731,7 +731,7 @@ void clClass::WriteScriptProperties( buffered_stream& Out ) const
 {
    if ( FProperties.empty() ) { return; }
 
-   Out << "   // Properties" << endl;
+   Out << g_Indent << "// Properties" << endl;
 
    for ( clPropertiesList::const_iterator p = FProperties.begin(); p != FProperties.end(); ++p )
    {
@@ -743,11 +743,11 @@ void clClass::WriteScriptFields( buffered_stream& Out ) const
 {
    if ( FFields.empty() ) { return; }
 
-   Out << "   // Fields" << endl;
+   Out << g_Indent << "// Fields" << endl;
 
    for ( clFieldsList::const_iterator f = FFields.begin() ; f != FFields.end() ; f++ )
    {
-      Out << "   public " << f->GetScriptDeclaration() << endl;
+      Out << g_Indent << "public " << f->GetScriptDeclaration() << endl;
    }
 }
 
@@ -793,18 +793,18 @@ void    clClass::GenerateInterfaceStub( const clClass* OriginalClass, buffered_s
       Stub << Access << endl;
    }
 
-   Stub << "   //" << endl;
-   Stub << "   // " << FClassName << " interface" << endl;
-   Stub << "   //" << endl;
+   Stub << g_Indent << "//" << endl;
+   Stub << g_Indent << "// " << FClassName << " interface" << endl;
+   Stub << g_Indent << "//" << endl;
 
    bool GenerateOnlyPureVirtual = false;
 
    if ( find( NeverOverride.begin(), NeverOverride.end(), FClassName ) != NeverOverride.end() )
    {
-      Stub << "      /*" << endl;
-      Stub << "            The interface of this class was marked as \"native final\"." << endl;
-      Stub << "            LSDC bypassed generation of stubs for it - only pure virtual methods are generated." << endl;
-      Stub << "      */" << endl;
+      Stub << g_Indent << g_Indent << "/*" << endl;
+      Stub << g_Indent << g_Indent << "      The interface of this class was marked as \"native final\"." << endl;
+      Stub << g_Indent << g_Indent << "      LSDC bypassed generation of stubs for it - only pure virtual methods are generated." << endl;
+      Stub << g_Indent << g_Indent << "*/" << endl;
 
       GenerateOnlyPureVirtual = true;
       //         return;
@@ -909,19 +909,22 @@ bool    clClass::GenerateEngineExports( buffered_stream& Stub, bool Tunneller ) 
    Stub << "void RegisterPackage" << FPackage->FPackageName << "Class" << FPackage->FPackagesProcsCounter++ << "(sEnvironment* Env)" << endl;
    Stub << "{" << endl;
 	if ( Tunneller ) Stub << "#if !defined(_DISABLE_TUNNELLERS_)" << endl;
-   Stub << "   iStaticClass* StaticClass = new clNative" << ( Abstract ? "Abstract" : "" ) << "StaticClass";
+   Stub << g_Indent << "iStaticClass* StaticClass = new clNative" << ( Abstract ? "Abstract" : "" ) << "StaticClass";
 	if ( !HasDefaultConstructor() ) Stub << FConstructors[0].FArgTypes.size();
-	Stub << "<" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << ConstructorParams << " >;" << endl;
+   // assign superclass
+	const auto SuperClassName = FBaseClasses.begin() != FBaseClasses.end() ? FBaseClasses.begin()->FBaseClassName : "";
+	Stub << "<" << FClassName << ( Tunneller ? "_Tunneller" : "" ) << ConstructorParams << " >( Env, \"" << SuperClassName << "\" );" << endl;
    Stub << endl;
-   Stub << "   StaticClass->Env = Env;" << endl;
-   Stub << endl;
 
- 	Stub << "#if !defined(_DISABLE_METHODS_)" << endl;
+	if ( g_GenerateMethods )
+	{
+	 	Stub << "#if !defined(_DISABLE_METHODS_)" << endl;
 
-   // register methods
-   WriteMethodRegistration( Stub, Tunneller );
+	   // register methods
+	   WriteMethodRegistration( Stub, Tunneller );
 
-	Stub << "#endif // _DISABLE_METHODS_" << endl;	
+		Stub << "#endif // _DISABLE_METHODS_" << endl;	
+	}
 
    // register fields
    if ( !Tunneller ) { WriteFieldRegistration( Stub ); }
@@ -929,14 +932,7 @@ bool    clClass::GenerateEngineExports( buffered_stream& Stub, bool Tunneller ) 
    // register properties
    if ( !Tunneller ) { WritePropertyRegistration( Stub ); }
 
-   // assign superclass
-   if  ( FBaseClasses.begin() != FBaseClasses.end() )
-   {
-      Stub << "   StaticClass->SetSuperClassName( \"" << FBaseClasses.begin()->FBaseClassName << "\" );" << endl;
-      Stub << endl;
-   }
-
-   Stub << "   Env->Linker->RegisterStaticClass( StaticClass );" << endl;
+   Stub << g_Indent << "Env->Linker->RegisterStaticClass( StaticClass );" << endl;
 	if ( Tunneller ) Stub << "#endif // _DISABLE_TUNNELLERS_" << endl;
    Stub << "}" << endl;
 
@@ -987,7 +983,7 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
 	if ( !HasDefaultConstructor() )
 	{
 		Stub << "public:" << endl;
-		Stub << "   " << FClassName << "_Tunneller(";
+		Stub << g_Indent << FClassName << "_Tunneller(";
 
 		for ( size_t i = 0; i != FConstructors[0].FArgTypes.size(); i++ )
 		{
@@ -1018,7 +1014,7 @@ bool    clClass::GenerateClassStub( const vector<string>& NeverOverride ) const
    Stub << endl;
    Stub << "/*" << endl;
    Stub << " * " << LSDCDate << endl;
-   Stub << "     Autogenerated via " << LSDCName << endl;
+   Stub << g_Indent << g_Indent << "Autogenerated via " << LSDCName << endl;
    Stub << "*/" << endl;
 
    return true;
