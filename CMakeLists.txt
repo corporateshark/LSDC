@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 project("LSDC" CXX C)
 set(PROJECT_NAME "LSDC")
 
+option(ENABLE_TESTS "Enable tests apps" OFF)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 macro(setup_source_groups src_files)
@@ -63,9 +65,11 @@ target_link_libraries(LSDC
 	LSDClib
 )
 
-#add_executable("LSDCtest" "src/test.cpp" )
-#target_link_libraries(LSDCtest
-#	LSDClib
-#)
+if(ENABLE_TESTS)
+	add_executable("LSDCtest" "src/test.cpp" )
+	target_link_libraries(LSDCtest
+		LSDClib
+	)
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_RELEASE ${PROJECT_NAME})
