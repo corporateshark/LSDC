@@ -131,6 +131,7 @@ bool clEnum::ParseNameAndParams(const std::string& S)
 	}
 
 	FEnumName = Parts[0] == "class" ? Parts[1] : Parts[0];
+	FEnumName = TrimSpaces( BeforeChar( FEnumName, ":" ) );
 
 //	std::cout << "Enum name = " << FEnumName << std::endl;
 
