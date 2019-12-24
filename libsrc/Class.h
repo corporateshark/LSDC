@@ -115,6 +115,8 @@ struct clClass
 
    /// Can this class be inherited in script
    bool                   FScriptFinal;
+   /// Can this class be inherited in C++
+   bool                   FFinal = false;
    /// Is this class exported to .NET
    bool                   FNetExportable;
    /// Is this class serializable (i.e., serialization code is generated for this class)

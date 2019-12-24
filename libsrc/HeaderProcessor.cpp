@@ -538,7 +538,16 @@ bool clHeaderProcessor::ReadClassNamesAndAttributes( int ClassNameOffset, clClas
 
       if ( ClassAttribs.size() > 1 )
       {
-         ClassName = ClassAttribs[ClassAttribs.size()-1];
+			if ( ClassAttribs.back() == "final" )
+			{
+				TheClass->FFinal = true;
+				ClassAttribs.pop_back();
+			}
+
+         ClassName = ClassAttribs.back();
+
+			if ( g_Verbose && TheClass->FFinal )
+				cout << "Final class: " << ClassName << endl;
       }
    }
 
