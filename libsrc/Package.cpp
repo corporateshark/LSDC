@@ -389,7 +389,7 @@ void clPackage::GenerateExportsRegHeader( buffered_stream& Out ) const
 	Out << endl;
 	Out.Include( "Core/Linker.h" );
 	Out.Include( "Core/RTTI/iStaticClass.h" );
-	Out.Include( "Core/RTTI/FieldBinding.h" );
+//	Out.Include( "Core/RTTI/FieldBinding.h" );
 	Out.Include( "Core/RTTI/PropertyMacros.h" );
 	Out << endl;
 
