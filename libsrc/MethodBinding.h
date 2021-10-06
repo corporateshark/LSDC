@@ -441,7 +441,7 @@ void GenerateCapsule( std::ostream& Out, bool Static, int ParamsCount, bool Cons
 	{
 		if ( SmartPtr )
 		{
-			Out << "FObjectAddr.GetInternalPtr()->*FMethodPtr";
+			Out << "FObjectAddr.getPtr()->*FMethodPtr";
 		}
 		else
 		{
