@@ -8,26 +8,40 @@ using std::endl;
 #endif
 
 #if (defined(_WIN32) || defined(_WIN64))
-#include <direct.h>
-#include <windows.h>
-//#endif
+#	include <direct.h>
 #else
-//#ifdef __linux__
-#include <time.h>
-#include <dirent.h>
-#include <libgen.h>
-#include <sys/stat.h>
+#	include <time.h>
+#	include <dirent.h>
+#	include <libgen.h>
+#	include <sys/stat.h>
 #endif
 
 #include "Utils.h"
-
 #include "HeaderProcessor.h"
 
-#include "FileWalker.h"
+#include <filesystem>
 
-using namespace std;
+using std::string;
 
-class Package_FileWalker : public FileWalker
+class AbstractFileWalker
+{
+public:
+	void Scan(const string& dirName)
+	{
+		for (auto const& entry : std::filesystem::directory_iterator{ dirName })
+		{
+			if (entry.is_directory())
+				ProcessDirectory(entry.path().string(), entry.path().filename().string());
+			else
+				ProcessFile(entry.path().string(), entry.path().filename().string());
+		}
+	}
+	// override these to define custom behavior
+	virtual void ProcessFile(const string& fileName, const string& shortName) = 0;
+	virtual void ProcessDirectory(const string& dirName, const string& shortName) = 0;
+};
+
+class Package_FileWalker : public AbstractFileWalker
 {
 public:
    clPackage* FPackage;
