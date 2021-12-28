@@ -28,12 +28,17 @@ class AbstractFileWalker
 public:
 	void Scan(const string& dirName)
 	{
+		// 1. Files in this folder
+		for (auto const& entry : std::filesystem::directory_iterator{ dirName })
+		{
+			if (!entry.is_directory())
+				ProcessFile(entry.path().string(), entry.path().filename().string());
+		}
+		// 2. Subdirectories
 		for (auto const& entry : std::filesystem::directory_iterator{ dirName })
 		{
 			if (entry.is_directory())
 				ProcessDirectory(entry.path().string(), entry.path().filename().string());
-			else
-				ProcessFile(entry.path().string(), entry.path().filename().string());
 		}
 	}
 	// override these to define custom behavior
