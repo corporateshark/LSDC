@@ -4,10 +4,10 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.8.10c
- * \date 30/07/2010
- * \author Sergey Kosarevsky, 2005-2010
- * \author Viktor Latypov, 2007-2010
+ * \version 0.9.80
+ * \date 28/12/2021
+ * \author Sergey Kosarevsky, 2005-2021
+ * \author Viktor Latypov, 2007-2019
  * \author support@linderdaum.com http://www.linderdaum.com
  */
 

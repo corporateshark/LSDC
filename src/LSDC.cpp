@@ -4,9 +4,10 @@
  *
  * LinderScript Database Compiler
  *
- * \version 0.9.01
- * \date 20/09/2010
- * \author Viktor Latypov, 2010
+ * \version 0.9.80
+ * \date 28/12/2021
+ * \author Sergey Kosarevsky, 2010-2021
+ * \author Viktor Latypov, 2010-2014
  * \author support@linderdaum.com, viktor@linderdaum.com http://www.linderdaum.com
  */
 
@@ -226,7 +227,7 @@ void Banner()
 {
    cout << "LinderScript Database Compiler" << endl;
    cout << "Version " << LSDCVersion << " (" << LSDCDate << ")" << endl;
-   cout << "(C) Sergey Kosarevsky, 2005-2019" << endl;
+   cout << "(C) Sergey Kosarevsky, 2005-2021" << endl;
    cout << "(C) Viktor Latypov, 2007-2014" << endl << endl;
 }
 
