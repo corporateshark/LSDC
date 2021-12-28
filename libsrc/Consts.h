@@ -11,8 +11,7 @@
  * \author support@linderdaum.com http://www.linderdaum.com
  */
 
-#ifndef _Consts_h_
-#define _Consts_h_
+#pragma once
 
 #include <string>
 
@@ -27,22 +26,27 @@ struct clPackage;
 struct clConst
 {
 public:
-   clConst( string Name,
-            clPackage* PackageIdx,
-            string DeclaredIn,
-            string Type,
-            string Value,
-            bool IsArray );
+	clConst(string Name,
+		clPackage* PackageIdx,
+		string DeclaredIn,
+		string Type,
+		string Value,
+		bool IsArray)
+		: FName(Name)
+		, FPackage(PackageIdx)
+		, FDeclaredIn(DeclaredIn)
+		, FType(Type)
+		, FValue(Value)
+		, FIsArray(IsArray)
+	{}
 public:
-   string             FName;
-   clPackage*         FPackage;
-   string             FDeclaredIn;
-   string             FType;
-   string             FValue;
-   bool               FIsArray;
+	string     FName;
+	clPackage* FPackage = nullptr;
+	string     FDeclaredIn;
+	string     FType;
+	string     FValue;
+	bool       FIsArray = false;
 };
-
-#endif
 
 /*
  * 19/05/2010
